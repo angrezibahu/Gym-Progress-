@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6c5ce7"/>
+      <stop offset="100%" style="stop-color:#00cec9"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="100" fill="url(#grad)"/>
+  <g fill="white">
+    <!-- Dumbbell icon -->
+    <rect x="90" y="226" width="70" height="60" rx="8"/>
+    <rect x="352" y="226" width="70" height="60" rx="8"/>
+    <rect x="145" y="196" width="45" height="120" rx="6"/>
+    <rect x="322" y="196" width="45" height="120" rx="6"/>
+    <rect x="185" y="241" width="142" height="30" rx="6"/>
+    <!-- Up arrow for progress -->
+    <polygon points="256,110 310,180 280,180 280,195 232,195 232,180 202,180"/>
+  </g>
+</svg>
