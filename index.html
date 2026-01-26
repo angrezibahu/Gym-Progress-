@@ -784,18 +784,6 @@
                     <button class="edit-btn" onclick="showEditProfile()">⚙️</button>
                 </div>
 
-                <!-- Session Tabs -->
-                <div class="session-tabs">
-                    <button class="session-tab active" data-session="A" onclick="switchSession('A')">
-                        Session A
-                        <span class="session-name">Squat + Push</span>
-                    </button>
-                    <button class="session-tab" data-session="B" onclick="switchSession('B')">
-                        Session B
-                        <span class="session-name">Hinge + Pull</span>
-                    </button>
-                </div>
-
                 <!-- Exercises -->
                 <div id="exerciseList" class="exercise-list">
                     <!-- Dynamically populated -->
@@ -1003,32 +991,27 @@
         // ==========================================
         // EXERCISE DEFINITIONS
         // ==========================================
-        const EXERCISES = {
-            A: [
-                { id: 'squat', name: 'Barbell Back Squat', muscles: ['quads', 'glutes', 'core'], primary: true },
-                { id: 'bench', name: 'Bench Press', muscles: ['chest', 'triceps', 'shoulders'], primary: true },
-                { id: 'rdl', name: 'Romanian Deadlift', muscles: ['hamstrings', 'glutes', 'lowerback'], primary: true },
-                { id: 'ohp', name: 'Overhead Press', muscles: ['shoulders', 'triceps'], primary: true },
-                { id: 'lateral_raise', name: 'Lateral Raises', muscles: ['shoulders'], primary: false },
-                { id: 'calf_raise_a', name: 'Calf Raises', muscles: ['calves'], primary: false },
-                { id: 'pallof_a', name: 'Pallof Press', muscles: ['core'], optional: true },
-            ],
-            B: [
-                { id: 'hip_thrust', name: 'Hip Thrust / Glute Bridge', muscles: ['glutes', 'hamstrings'], primary: true },
-                { id: 'leg_press', name: 'Leg Press', muscles: ['quads', 'glutes'], primary: true },
-                { id: 'lat_pulldown', name: 'Lat Pulldown', muscles: ['lats', 'biceps'], primary: true },
-                { id: 'cable_row', name: 'Seated Cable Row / Barbell Row', muscles: ['lats', 'rhomboids', 'biceps'], primary: true },
-                { id: 'hamstring_curl', name: 'Hamstring Curl Machine', muscles: ['hamstrings'], primary: false },
-                { id: 'tricep_ext', name: 'Triceps Extensions', muscles: ['triceps'], primary: false },
-                { id: 'pallof_b', name: 'Pallof Press', muscles: ['core'], primary: false },
-                { id: 'calf_raise_b', name: 'Calf Raises', muscles: ['calves'], optional: true },
-            ]
-        };
+        const EXERCISES = [
+            // Primary compound movements
+            { id: 'squat', name: 'Barbell Back Squat', muscles: ['quads', 'glutes', 'core'], primary: true },
+            { id: 'bench', name: 'Bench Press', muscles: ['chest', 'triceps', 'shoulders'], primary: true },
+            { id: 'rdl', name: 'Romanian Deadlift', muscles: ['hamstrings', 'glutes', 'lowerback'], primary: true },
+            { id: 'ohp', name: 'Overhead Press', muscles: ['shoulders', 'triceps'], primary: true },
+            { id: 'hip_thrust', name: 'Hip Thrust / Glute Bridge', muscles: ['glutes', 'hamstrings'], primary: true },
+            { id: 'leg_press', name: 'Leg Press', muscles: ['quads', 'glutes'], primary: true },
+            { id: 'lat_pulldown', name: 'Lat Pulldown', muscles: ['lats', 'biceps'], primary: true },
+            { id: 'cable_row', name: 'Seated Cable Row / Barbell Row', muscles: ['lats', 'rhomboids', 'biceps'], primary: true },
+            // Accessory movements
+            { id: 'lateral_raise', name: 'Lateral Raises', muscles: ['shoulders'], primary: false },
+            { id: 'hamstring_curl', name: 'Hamstring Curl Machine', muscles: ['hamstrings'], primary: false },
+            { id: 'tricep_ext', name: 'Triceps Extensions', muscles: ['triceps'], primary: false },
+            { id: 'calf_raise', name: 'Calf Raises', muscles: ['calves'], primary: false },
+            { id: 'pallof', name: 'Pallof Press', muscles: ['core'], optional: true },
+        ];
 
         // ==========================================
         // STATE
         // ==========================================
-        let currentSession = 'A';
         let selectedEffort = 3;
         let selectedGender = null;
         let currentWorkout = {};
@@ -1161,26 +1144,15 @@
         }
 
         // ==========================================
-        // SESSION SWITCHING
-        // ==========================================
-        function switchSession(session) {
-            currentSession = session;
-            document.querySelectorAll('.session-tab').forEach(tab => {
-                tab.classList.toggle('active', tab.dataset.session === session);
-            });
-            renderExercises();
-        }
-
-        // ==========================================
         // EXERCISE RENDERING
         // ==========================================
         function renderExercises() {
-            const exercises = EXERCISES[currentSession];
+            const exercises = EXERCISES;
             const container = document.getElementById('exerciseList');
 
             // Load any saved data for today
             const todayKey = getTodayKey();
-            const savedToday = currentWorkout[currentSession] || {};
+            const savedToday = currentWorkout;
 
             container.innerHTML = exercises.map(ex => {
                 const saved = savedToday[ex.id] || {};
@@ -1215,32 +1187,25 @@
         }
 
         function toggleExercise(exerciseId) {
-            if (!currentWorkout[currentSession]) {
-                currentWorkout[currentSession] = {};
-            }
-            if (!currentWorkout[currentSession][exerciseId]) {
-                currentWorkout[currentSession][exerciseId] = {};
+            if (!currentWorkout[exerciseId]) {
+                currentWorkout[exerciseId] = {};
             }
 
-            currentWorkout[currentSession][exerciseId].completed =
-                !currentWorkout[currentSession][exerciseId].completed;
+            currentWorkout[exerciseId].completed = !currentWorkout[exerciseId].completed;
 
             renderExercises();
         }
 
         function updateExerciseData(exerciseId) {
-            if (!currentWorkout[currentSession]) {
-                currentWorkout[currentSession] = {};
-            }
-            if (!currentWorkout[currentSession][exerciseId]) {
-                currentWorkout[currentSession][exerciseId] = {};
+            if (!currentWorkout[exerciseId]) {
+                currentWorkout[exerciseId] = {};
             }
 
             const weight = document.getElementById(`weight_${exerciseId}`).value;
             const reps = document.getElementById(`reps_${exerciseId}`).value;
 
-            currentWorkout[currentSession][exerciseId].weight = parseFloat(weight) || 0;
-            currentWorkout[currentSession][exerciseId].reps = parseInt(reps) || 0;
+            currentWorkout[exerciseId].weight = parseFloat(weight) || 0;
+            currentWorkout[exerciseId].reps = parseInt(reps) || 0;
         }
 
         // ==========================================
@@ -1262,11 +1227,10 @@
 
         function saveWorkout() {
             // Collect all exercise data
-            const exercises = EXERCISES[currentSession];
+            const exercises = EXERCISES;
             const workoutData = {
                 date: new Date().toISOString(),
                 dateKey: getTodayKey(),
-                session: currentSession,
                 effort: selectedEffort,
                 exercises: {}
             };
@@ -1400,17 +1364,8 @@
 
         function populateExerciseSelector() {
             const select = document.getElementById('exerciseSelect');
-            const allExercises = [...EXERCISES.A, ...EXERCISES.B];
 
-            // Remove duplicates (like Pallof press appears in both)
-            const uniqueExercises = allExercises.reduce((acc, ex) => {
-                if (!acc.find(e => e.id === ex.id)) {
-                    acc.push(ex);
-                }
-                return acc;
-            }, []);
-
-            select.innerHTML = uniqueExercises.map(ex =>
+            select.innerHTML = EXERCISES.map(ex =>
                 `<option value="${ex.id}">${ex.name}</option>`
             ).join('');
         }
@@ -1702,7 +1657,6 @@
                     <div class="history-item">
                         <div class="date">
                             ${dateStr}
-                            <span class="session-type">Session ${w.session}</span>
                         </div>
                         <div class="exercises">
                             ${exerciseNames}${moreCount > 0 ? ` +${moreCount} more` : ''}
