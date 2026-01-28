@@ -674,21 +674,6 @@
             opacity: 1;
         }
 
-        /* Exercise selector for progress */
-        .exercise-selector {
-            margin-bottom: 16px;
-        }
-
-        .exercise-selector select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--card-border);
-            border-radius: 8px;
-            background: var(--darker);
-            color: var(--light);
-            font-size: 1rem;
-        }
-
         /* Muscle group highlights */
         .muscle-active {
             fill: var(--success) !important;
@@ -763,28 +748,6 @@
             color: #b2bec3;
         }
 
-        /* Weight update quick action */
-        .quick-weight-update {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .quick-weight-update input {
-            width: 80px;
-            padding: 8px;
-            border: 2px solid var(--card-border);
-            border-radius: 8px;
-            background: var(--darker);
-            color: var(--light);
-            text-align: center;
-        }
-
-        .quick-weight-update .btn {
-            padding: 8px 16px;
-        }
-
         /* Scrollable history */
         .scrollable-history {
             max-height: 400px;
@@ -801,11 +764,6 @@
         <div class="form-group">
             <label>Your Name</label>
             <input type="text" id="setupName" placeholder="Enter your name">
-        </div>
-
-        <div class="form-group">
-            <label>Current Body Weight (kg)</label>
-            <input type="number" id="setupWeight" placeholder="e.g., 70" step="0.1">
         </div>
 
         <div class="form-group">
@@ -842,9 +800,8 @@
                     <div class="user-avatar" id="userAvatar">♀</div>
                     <div class="user-info">
                         <h3 id="userName">User</h3>
-                        <p id="userWeight">0 kg</p>
+                        <p id="userGreeting">Ready to work out!</p>
                     </div>
-                    <button class="edit-btn" onclick="showEditProfile()">⚙️</button>
                 </div>
 
                 <!-- Exercises -->
@@ -891,26 +848,14 @@
                         <div class="label">Avg Effort</div>
                     </div>
                     <div class="stat-card">
-                        <div class="value" id="weightChange">0</div>
-                        <div class="label">Weight Change</div>
+                        <div class="value" id="totalExercises">0</div>
+                        <div class="label">Total Exercises</div>
                     </div>
                 </div>
 
-                <!-- Exercise Progress Chart -->
-                <div class="chart-container">
-                    <h3>Exercise Progress</h3>
-                    <div class="exercise-selector">
-                        <select id="exerciseSelect" onchange="updateProgressChart()">
-                            <!-- Populated dynamically -->
-                        </select>
-                    </div>
-                    <canvas id="progressChart" class="chart-canvas"></canvas>
-                </div>
-
-                <!-- Body Weight Chart -->
-                <div class="chart-container">
-                    <h3>Body Weight Trend</h3>
-                    <canvas id="weightChart" class="chart-canvas"></canvas>
+                <!-- Individual Exercise Progress Charts -->
+                <div id="exerciseChartsContainer">
+                    <!-- Dynamically populated with individual charts -->
                 </div>
 
                 <!-- Effort Over Time -->
@@ -949,10 +894,6 @@
                     <div class="form-group">
                         <label>Name</label>
                         <input type="text" id="settingsName">
-                    </div>
-                    <div class="form-group">
-                        <label>Current Weight (kg)</label>
-                        <input type="number" id="settingsWeight" step="0.1">
                     </div>
                     <div class="form-group">
                         <label>Gender</label>
@@ -1017,21 +958,6 @@
 
     <!-- Toast -->
     <div id="toast" class="toast"></div>
-
-    <!-- Edit Profile Modal -->
-    <div id="editProfileModal" class="modal-overlay">
-        <div class="modal">
-            <h3>Quick Weight Update</h3>
-            <div class="form-group">
-                <label>Current Weight (kg)</label>
-                <input type="number" id="quickWeight" step="0.1">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="quickUpdateWeight()">Update</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Confirm Reset Modal -->
     <div id="confirmResetModal" class="modal-overlay">
@@ -1167,11 +1093,6 @@
             return data ? (data.workouts || []) : [];
         }
 
-        function getWeightHistory() {
-            const data = loadData();
-            return data ? (data.weightHistory || []) : [];
-        }
-
         // ==========================================
         // INITIALIZATION
         // ==========================================
@@ -1216,14 +1137,9 @@
 
         function completeSetup() {
             const name = document.getElementById('setupName').value.trim();
-            const weight = parseFloat(document.getElementById('setupWeight').value);
 
             if (!name) {
                 showToast('Please enter your name', 'warning');
-                return;
-            }
-            if (!weight || weight < 20 || weight > 300) {
-                showToast('Please enter a valid weight', 'warning');
                 return;
             }
             if (!selectedGender) {
@@ -1235,15 +1151,10 @@
                 version: DATA_VERSION,
                 user: {
                     name: name,
-                    weight: weight,
                     gender: selectedGender,
                     createdAt: new Date().toISOString()
                 },
-                workouts: [],
-                weightHistory: [{
-                    date: new Date().toISOString(),
-                    weight: weight
-                }]
+                workouts: []
             };
 
             saveData(data);
@@ -1267,12 +1178,10 @@
             if (!user) return;
 
             document.getElementById('userName').textContent = user.name;
-            document.getElementById('userWeight').textContent = user.weight + ' kg';
             document.getElementById('userAvatar').textContent = user.gender === 'male' ? '♂' : '♀';
 
             // Update settings form
             document.getElementById('settingsName').value = user.name;
-            document.getElementById('settingsWeight').value = user.weight;
             document.getElementById('settingsGender').value = user.gender;
         }
 
@@ -1290,7 +1199,6 @@
             container.innerHTML = exercises.map(ex => {
                 const saved = savedToday[ex.id] || {};
                 const isChecked = saved.completed || false;
-                const weight = saved.weight || '';
                 const reps = saved.reps || '';
 
                 return `
@@ -1303,11 +1211,6 @@
                             </div>
                         </div>
                         <div class="exercise-inputs">
-                            <div class="input-group">
-                                <label>Weight (kg)</label>
-                                <input type="number" id="weight_${ex.id}" value="${weight}"
-                                    placeholder="0" step="0.5" onchange="updateExerciseData('${ex.id}')">
-                            </div>
                             <div class="input-group">
                                 <label>Reps</label>
                                 <input type="number" id="reps_${ex.id}" value="${reps}"
@@ -1334,10 +1237,7 @@
                 currentWorkout[exerciseId] = {};
             }
 
-            const weight = document.getElementById(`weight_${exerciseId}`).value;
             const reps = document.getElementById(`reps_${exerciseId}`).value;
-
-            currentWorkout[exerciseId].weight = parseFloat(weight) || 0;
             currentWorkout[exerciseId].reps = parseInt(reps) || 0;
         }
 
@@ -1370,18 +1270,15 @@
 
             let hasData = false;
             exercises.forEach(ex => {
-                const weightInput = document.getElementById(`weight_${ex.id}`);
                 const repsInput = document.getElementById(`reps_${ex.id}`);
                 const card = document.querySelector(`[data-exercise="${ex.id}"]`);
                 const isCompleted = card.classList.contains('completed');
 
-                const weight = parseFloat(weightInput.value) || 0;
                 const reps = parseInt(repsInput.value) || 0;
 
-                if (isCompleted || weight > 0 || reps > 0) {
+                if (isCompleted || reps > 0) {
                     workoutData.exercises[ex.id] = {
                         name: ex.name,
-                        weight: weight,
                         reps: reps,
                         completed: isCompleted,
                         muscles: ex.muscles
@@ -1438,7 +1335,6 @@
         // ==========================================
         function loadProgressPage() {
             const workouts = getWorkoutHistory();
-            const weightHistory = getWeightHistory();
 
             // Calculate stats
             document.getElementById('totalWorkouts').textContent = workouts.length;
@@ -1453,21 +1349,15 @@
                 document.getElementById('avgEffort').textContent = avgEffort.toFixed(1);
             }
 
-            // Weight change
-            if (weightHistory.length > 1) {
-                const firstWeight = weightHistory[0].weight;
-                const lastWeight = weightHistory[weightHistory.length - 1].weight;
-                const change = lastWeight - firstWeight;
-                document.getElementById('weightChange').textContent =
-                    (change >= 0 ? '+' : '') + change.toFixed(1) + ' kg';
-            }
+            // Total exercises completed
+            let totalExercises = 0;
+            workouts.forEach(w => {
+                totalExercises += Object.keys(w.exercises).length;
+            });
+            document.getElementById('totalExercises').textContent = totalExercises;
 
-            // Populate exercise selector
-            populateExerciseSelector();
-
-            // Draw charts
-            updateProgressChart();
-            drawWeightChart();
+            // Draw individual exercise charts
+            drawAllExerciseCharts();
             drawEffortChart();
 
             // Draw body diagram
@@ -1495,44 +1385,61 @@
             return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
         }
 
-        function populateExerciseSelector() {
-            const select = document.getElementById('exerciseSelect');
-
-            select.innerHTML = EXERCISES.map(ex =>
-                `<option value="${ex.id}">${ex.name}</option>`
-            ).join('');
-        }
-
-        function updateProgressChart() {
-            const canvas = document.getElementById('progressChart');
-            const ctx = canvas.getContext('2d');
-            const exerciseId = document.getElementById('exerciseSelect').value;
-
-            // Get data for this exercise
+        function drawAllExerciseCharts() {
+            const container = document.getElementById('exerciseChartsContainer');
             const workouts = getWorkoutHistory();
-            const exerciseData = workouts
-                .filter(w => w.exercises[exerciseId])
-                .map(w => ({
-                    date: new Date(w.date),
-                    weight: w.exercises[exerciseId].weight,
-                    reps: w.exercises[exerciseId].reps
-                }))
-                .slice(-10); // Last 10 entries
 
-            drawLineChart(ctx, canvas, exerciseData, 'weight', 'Weight (kg)');
-        }
+            // Clear existing charts
+            container.innerHTML = '';
 
-        function drawWeightChart() {
-            const canvas = document.getElementById('weightChart');
-            const ctx = canvas.getContext('2d');
-            const weightHistory = getWeightHistory().slice(-10);
+            // Get exercises that have been performed at least once
+            const exercisesWithData = EXERCISES.filter(ex => {
+                return workouts.some(w => w.exercises[ex.id] && w.exercises[ex.id].reps > 0);
+            });
 
-            const data = weightHistory.map(w => ({
-                date: new Date(w.date),
-                weight: w.weight
-            }));
+            if (exercisesWithData.length === 0) {
+                container.innerHTML = `
+                    <div class="chart-container">
+                        <h3>Exercise Progress</h3>
+                        <div style="text-align: center; padding: 40px; color: #b2bec3;">
+                            <p>No exercise data yet.</p>
+                            <p>Complete your first workout to see your progress!</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
 
-            drawLineChart(ctx, canvas, data, 'weight', 'kg');
+            // Create a chart for each exercise with data
+            exercisesWithData.forEach(ex => {
+                const chartContainer = document.createElement('div');
+                chartContainer.className = 'chart-container';
+
+                const title = document.createElement('h3');
+                title.textContent = ex.name;
+                chartContainer.appendChild(title);
+
+                const canvas = document.createElement('canvas');
+                canvas.className = 'chart-canvas';
+                canvas.id = `chart_${ex.id}`;
+                chartContainer.appendChild(canvas);
+
+                container.appendChild(chartContainer);
+
+                // Draw the chart after appending to DOM
+                setTimeout(() => {
+                    const ctx = canvas.getContext('2d');
+                    const exerciseData = workouts
+                        .filter(w => w.exercises[ex.id] && w.exercises[ex.id].reps > 0)
+                        .map(w => ({
+                            date: new Date(w.date),
+                            reps: w.exercises[ex.id].reps
+                        }))
+                        .slice(-10); // Last 10 entries
+
+                    drawLineChart(ctx, canvas, exerciseData, 'reps', 'Reps');
+                }, 0);
+            });
         }
 
         function drawEffortChart() {
@@ -2054,7 +1961,6 @@
         // ==========================================
         function saveSettings() {
             const name = document.getElementById('settingsName').value.trim();
-            const weight = parseFloat(document.getElementById('settingsWeight').value);
             const gender = document.getElementById('settingsGender').value;
 
             if (!name) {
@@ -2063,50 +1969,12 @@
             }
 
             const data = loadData();
-            const oldWeight = data.user.weight;
-
             data.user.name = name;
-            data.user.weight = weight;
             data.user.gender = gender;
-
-            // Add weight history entry if weight changed
-            if (weight !== oldWeight) {
-                data.weightHistory.push({
-                    date: new Date().toISOString(),
-                    weight: weight
-                });
-            }
 
             saveData(data);
             updateUserDisplay();
             showToast('Settings saved!');
-        }
-
-        function showEditProfile() {
-            const user = getUserData();
-            document.getElementById('quickWeight').value = user.weight;
-            document.getElementById('editProfileModal').classList.add('active');
-        }
-
-        function quickUpdateWeight() {
-            const weight = parseFloat(document.getElementById('quickWeight').value);
-
-            if (!weight || weight < 20 || weight > 300) {
-                showToast('Please enter a valid weight', 'warning');
-                return;
-            }
-
-            const data = loadData();
-            data.user.weight = weight;
-            data.weightHistory.push({
-                date: new Date().toISOString(),
-                weight: weight
-            });
-            saveData(data);
-
-            updateUserDisplay();
-            closeModal();
-            showToast('Weight updated!');
         }
 
         function closeModal() {
