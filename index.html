@@ -1892,20 +1892,31 @@
             const workouts = getWorkoutHistory();
             const container = document.getElementById('historyList');
 
+            // Clear existing content
+            container.innerHTML = '';
+
             if (workouts.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #b2bec3;">
-                        <p>No workouts recorded yet.</p>
-                        <p>Complete your first session to see it here!</p>
-                    </div>
-                `;
+                const wrapper = document.createElement('div');
+                wrapper.style.textAlign = 'center';
+                wrapper.style.padding = '40px';
+                wrapper.style.color = '#b2bec3';
+
+                const p1 = document.createElement('p');
+                p1.textContent = 'No workouts recorded yet.';
+
+                const p2 = document.createElement('p');
+                p2.textContent = 'Complete your first session to see it here!';
+
+                wrapper.appendChild(p1);
+                wrapper.appendChild(p2);
+                container.appendChild(wrapper);
                 return;
             }
 
             // Show in reverse chronological order
             const sortedWorkouts = [...workouts].reverse();
 
-            container.innerHTML = sortedWorkouts.map(w => {
+            sortedWorkouts.forEach(w => {
                 const date = new Date(w.date);
                 const dateStr = date.toLocaleDateString('en-US', {
                     weekday: 'short',
@@ -1922,20 +1933,32 @@
                 const moreCount = Object.keys(w.exercises).length - 3;
                 const effortEmojis = ['😌', '😊', '😤', '🔥', '💀'];
 
-                return `
-                    <div class="history-item">
-                        <div class="date">
-                            ${dateStr}
-                        </div>
-                        <div class="exercises">
-                            ${exerciseNames}${moreCount > 0 ? ` +${moreCount} more` : ''}
-                        </div>
-                        <div class="effort-badge">
-                            Effort: ${effortEmojis[w.effort - 1]} (${w.effort}/5)
-                        </div>
-                    </div>
-                `;
-            }).join('');
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'date';
+                dateDiv.textContent = dateStr;
+
+                const exercisesDiv = document.createElement('div');
+                exercisesDiv.className = 'exercises';
+                let exercisesText = exerciseNames;
+                if (moreCount > 0) {
+                    exercisesText += ' +' + moreCount + ' more';
+                }
+                exercisesDiv.textContent = exercisesText;
+
+                const effortDiv = document.createElement('div');
+                effortDiv.className = 'effort-badge';
+                const effortEmoji = effortEmojis[w.effort - 1] || '';
+                effortDiv.textContent = 'Effort: ' + effortEmoji + ' (' + w.effort + '/5)';
+
+                historyItem.appendChild(dateDiv);
+                historyItem.appendChild(exercisesDiv);
+                historyItem.appendChild(effortDiv);
+
+                container.appendChild(historyItem);
+            });
         }
 
         // ==========================================
