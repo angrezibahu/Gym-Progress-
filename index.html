@@ -840,16 +840,16 @@
                         <div class="label">Total Workouts</div>
                     </div>
                     <div class="stat-card">
+                        <div class="value" id="totalWeightLifted">0</div>
+                        <div class="label">Weight Lifted (kg)</div>
+                    </div>
+                    <div class="stat-card">
                         <div class="value" id="currentStreak">0</div>
                         <div class="label">Week Streak</div>
                     </div>
                     <div class="stat-card">
                         <div class="value" id="avgEffort">0</div>
                         <div class="label">Avg Effort</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="value" id="totalExercises">0</div>
-                        <div class="label">Total Exercises</div>
                     </div>
                 </div>
 
@@ -1200,6 +1200,7 @@
                 const saved = savedToday[ex.id] || {};
                 const isChecked = saved.completed || false;
                 const reps = saved.reps || '';
+                const weight = saved.weight || '';
 
                 return `
                     <div class="exercise-card ${isChecked ? 'completed' : ''} ${ex.optional ? 'optional' : ''}" data-exercise="${ex.id}">
@@ -1211,6 +1212,11 @@
                             </div>
                         </div>
                         <div class="exercise-inputs">
+                            <div class="input-group">
+                                <label>Weight (kg)</label>
+                                <input type="number" id="weight_${ex.id}" value="${weight}"
+                                    placeholder="0" onchange="updateExerciseData('${ex.id}')">
+                            </div>
                             <div class="input-group">
                                 <label>Reps</label>
                                 <input type="number" id="reps_${ex.id}" value="${reps}"
@@ -1238,7 +1244,9 @@
             }
 
             const reps = document.getElementById(`reps_${exerciseId}`).value;
+            const weight = document.getElementById(`weight_${exerciseId}`).value;
             currentWorkout[exerciseId].reps = parseInt(reps) || 0;
+            currentWorkout[exerciseId].weight = parseFloat(weight) || 0;
         }
 
         // ==========================================
@@ -1271,15 +1279,18 @@
             let hasData = false;
             exercises.forEach(ex => {
                 const repsInput = document.getElementById(`reps_${ex.id}`);
+                const weightInput = document.getElementById(`weight_${ex.id}`);
                 const card = document.querySelector(`[data-exercise="${ex.id}"]`);
                 const isCompleted = card.classList.contains('completed');
 
                 const reps = parseInt(repsInput.value) || 0;
+                const weight = parseFloat(weightInput.value) || 0;
 
-                if (isCompleted || reps > 0) {
+                if (isCompleted || reps > 0 || weight > 0) {
                     workoutData.exercises[ex.id] = {
                         name: ex.name,
                         reps: reps,
+                        weight: weight,
                         completed: isCompleted,
                         muscles: ex.muscles
                     };
@@ -1339,6 +1350,22 @@
             // Calculate stats
             document.getElementById('totalWorkouts').textContent = workouts.length;
 
+            // Calculate total weight lifted (weight × reps for each exercise)
+            let totalWeightLifted = 0;
+            workouts.forEach(w => {
+                Object.values(w.exercises).forEach(ex => {
+                    const weight = ex.weight || 0;
+                    const reps = ex.reps || 0;
+                    totalWeightLifted += weight * reps;
+                });
+            });
+            // Format with K for thousands
+            if (totalWeightLifted >= 1000) {
+                document.getElementById('totalWeightLifted').textContent = (totalWeightLifted / 1000).toFixed(1) + 'K';
+            } else {
+                document.getElementById('totalWeightLifted').textContent = Math.round(totalWeightLifted);
+            }
+
             // Calculate streak (weeks with at least one workout)
             const streakWeeks = calculateStreak(workouts);
             document.getElementById('currentStreak').textContent = streakWeeks;
@@ -1348,13 +1375,6 @@
                 const avgEffort = workouts.reduce((sum, w) => sum + w.effort, 0) / workouts.length;
                 document.getElementById('avgEffort').textContent = avgEffort.toFixed(1);
             }
-
-            // Total exercises completed
-            let totalExercises = 0;
-            workouts.forEach(w => {
-                totalExercises += Object.keys(w.exercises).length;
-            });
-            document.getElementById('totalExercises').textContent = totalExercises;
 
             // Draw individual exercise charts
             drawAllExerciseCharts();
@@ -1928,12 +1948,31 @@
                 const moreCount = Object.keys(w.exercises).length - 3;
                 const effortEmojis = ['😌', '😊', '😤', '🔥', '💀'];
 
+                // Calculate total weight lifted for this workout
+                let workoutWeight = 0;
+                Object.values(w.exercises).forEach(ex => {
+                    const weight = ex.weight || 0;
+                    const reps = ex.reps || 0;
+                    workoutWeight += weight * reps;
+                });
+
                 const historyItem = document.createElement('div');
                 historyItem.className = 'history-item';
 
                 const dateDiv = document.createElement('div');
                 dateDiv.className = 'date';
                 dateDiv.textContent = dateStr;
+
+                // Add weight lifted badge if there's weight data
+                if (workoutWeight > 0) {
+                    const weightSpan = document.createElement('span');
+                    weightSpan.className = 'session-type';
+                    weightSpan.style.background = 'var(--secondary)';
+                    weightSpan.textContent = workoutWeight >= 1000
+                        ? (workoutWeight / 1000).toFixed(1) + 'K kg'
+                        : Math.round(workoutWeight) + ' kg';
+                    dateDiv.appendChild(weightSpan);
+                }
 
                 const exercisesDiv = document.createElement('div');
                 exercisesDiv.className = 'exercises';
