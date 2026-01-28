@@ -1084,13 +1084,18 @@
         // DATA MANAGEMENT
         // ==========================================
         function loadData() {
-            const data = localStorage.getItem('gymProgressData');
-            if (data) {
-                const parsed = JSON.parse(data);
-                // Future migration logic would go here
-                return parsed;
+            try {
+                const data = localStorage.getItem('gymProgressData');
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    // Future migration logic would go here
+                    return parsed;
+                }
+                return null;
+            } catch (error) {
+                console.error('Error loading data:', error);
+                return null;
             }
-            return null;
         }
 
         function saveData(data) {
@@ -1118,14 +1123,25 @@
         // INITIALIZATION
         // ==========================================
         function init() {
-            const user = getUserData();
-            if (user) {
-                showApp();
-                updateUserDisplay();
-                renderExercises();
-                updateHeaderDate();
-            } else {
+            try {
+                const user = getUserData();
+                if (user) {
+                    showApp();
+                    updateUserDisplay();
+                    renderExercises();
+                    updateHeaderDate();
+                } else {
+                    document.getElementById('setupScreen').style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Initialization error:', error);
+                // Show setup screen as fallback to prevent blank page
                 document.getElementById('setupScreen').style.display = 'flex';
+                // Clear potentially corrupted data
+                if (confirm('An error occurred loading your data. Would you like to reset and start fresh?')) {
+                    localStorage.removeItem('gymProgressData');
+                    location.reload();
+                }
             }
         }
 
