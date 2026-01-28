@@ -534,7 +534,7 @@
         }
 
         .anatomy-svg {
-            width: 140px;
+            width: 160px;
             height: auto;
         }
 
@@ -1684,231 +1684,250 @@
                 return muscleList.some(m => recentMuscles.has(m)) ? activeColor : baseColor;
             };
 
-            // Male Front View SVG
+            // Male Front View SVG - Anatomically realistic
             const maleFrontSVG = `
-                <svg viewBox="0 0 120 220" class="anatomy-svg">
+                <svg viewBox="0 0 200 380" class="anatomy-svg">
                     <!-- Head -->
-                    <ellipse cx="60" cy="18" rx="14" ry="16" fill="${baseColor}"/>
+                    <ellipse cx="100" cy="28" rx="22" ry="26" fill="${baseColor}"/>
 
-                    <!-- Neck / Traps -->
-                    <path d="M52 32 L68 32 L72 42 L48 42 Z" fill="${mc('traps')}"/>
+                    <!-- Neck -->
+                    <path d="M88 52 C88 58, 85 62, 82 66 L118 66 C115 62, 112 58, 112 52" fill="${mc('traps')}"/>
 
-                    <!-- Shoulders (Delts) -->
-                    <ellipse cx="30" cy="50" rx="12" ry="10" fill="${mc('shoulders')}"/>
-                    <ellipse cx="90" cy="50" rx="12" ry="10" fill="${mc('shoulders')}"/>
+                    <!-- Trapezius -->
+                    <path d="M82 66 C65 70, 52 78, 45 88 L70 88 C74 80, 78 72, 82 66" fill="${mc('traps')}"/>
+                    <path d="M118 66 C135 70, 148 78, 155 88 L130 88 C126 80, 122 72, 118 66" fill="${mc('traps')}"/>
 
-                    <!-- Chest (Pecs) -->
-                    <path d="M38 45 Q60 42 82 45 L82 70 Q60 75 38 70 Z" fill="${mc('chest')}"/>
+                    <!-- Shoulders (Deltoids) -->
+                    <path d="M45 88 C32 90, 22 100, 20 115 C22 130, 28 138, 35 140 C38 130, 40 115, 45 100 C48 95, 50 90, 55 88 L45 88" fill="${mc('shoulders')}"/>
+                    <path d="M155 88 C168 90, 178 100, 180 115 C178 130, 172 138, 165 140 C162 130, 160 115, 155 100 C152 95, 150 90, 145 88 L155 88" fill="${mc('shoulders')}"/>
+
+                    <!-- Chest (Pectorals) -->
+                    <path d="M55 88 C60 86, 75 84, 85 86 L85 95 C78 100, 65 108, 55 115 C50 112, 45 108, 45 100 C45 95, 48 90, 55 88" fill="${mc('chest')}"/>
+                    <path d="M145 88 C140 86, 125 84, 115 86 L115 95 C122 100, 135 108, 145 115 C150 112, 155 108, 155 100 C155 95, 152 90, 145 88" fill="${mc('chest')}"/>
+                    <path d="M85 86 C92 85, 100 84, 100 84 C100 84, 108 85, 115 86 L115 95 C108 94, 100 93, 100 93 C100 93, 92 94, 85 95 Z" fill="${mc('chest')}"/>
 
                     <!-- Biceps -->
-                    <path d="M20 55 Q14 70 16 90 Q22 92 26 88 Q28 70 24 55 Z" fill="${mc('biceps')}"/>
-                    <path d="M100 55 Q106 70 104 90 Q98 92 94 88 Q92 70 96 55 Z" fill="${mc('biceps')}"/>
+                    <path d="M35 140 C30 145, 26 160, 26 175 C26 188, 30 198, 36 202 C42 200, 48 195, 50 185 C52 172, 50 158, 48 145 C45 142, 40 140, 35 140" fill="${mc('biceps')}"/>
+                    <path d="M165 140 C170 145, 174 160, 174 175 C174 188, 170 198, 164 202 C158 200, 152 195, 150 185 C148 172, 150 158, 152 145 C155 142, 160 140, 165 140" fill="${mc('biceps')}"/>
+
+                    <!-- Forearms -->
+                    <path d="M36 202 C32 210, 28 230, 26 250 C25 265, 26 278, 30 285 C36 288, 44 286, 48 280 C52 268, 52 248, 50 225 C50 215, 48 205, 45 202 C42 200, 38 200, 36 202" fill="${baseColor}"/>
+                    <path d="M164 202 C168 210, 172 230, 174 250 C175 265, 174 278, 170 285 C164 288, 156 286, 152 280 C148 268, 148 248, 150 225 C150 215, 152 205, 155 202 C158 200, 162 200, 164 202" fill="${baseColor}"/>
+
+                    <!-- Hands -->
+                    <ellipse cx="30" cy="300" rx="10" ry="18" fill="${baseColor}"/>
+                    <ellipse cx="170" cy="300" rx="10" ry="18" fill="${baseColor}"/>
+
+                    <!-- Serratus/Obliques -->
+                    <path d="M55 115 C52 125, 50 135, 52 148 L62 148 C60 138, 58 125, 62 115 L55 115" fill="${mc('core')}"/>
+                    <path d="M145 115 C148 125, 150 135, 148 148 L138 148 C140 138, 142 125, 138 115 L145 115" fill="${mc('core')}"/>
 
                     <!-- Abs / Core -->
-                    <path d="M45 72 L75 72 L73 115 Q60 118 47 115 Z" fill="${mc('core')}"/>
-                    <!-- Ab lines -->
-                    <line x1="60" y1="75" x2="60" y2="112" stroke="${baseColor}" stroke-width="1" opacity="0.5"/>
-                    <line x1="48" y1="82" x2="72" y2="82" stroke="${baseColor}" stroke-width="0.5" opacity="0.5"/>
-                    <line x1="48" y1="92" x2="72" y2="92" stroke="${baseColor}" stroke-width="0.5" opacity="0.5"/>
-                    <line x1="48" y1="102" x2="72" y2="102" stroke="${baseColor}" stroke-width="0.5" opacity="0.5"/>
+                    <path d="M62 115 C68 112, 80 110, 100 110 C120 110, 132 112, 138 115 L138 148 C138 155, 136 165, 134 180 C130 200, 125 215, 120 225 L80 225 C75 215, 70 200, 66 180 C64 165, 62 155, 62 148 Z" fill="${mc('core')}"/>
 
-                    <!-- Forearms -->
-                    <path d="M14 92 Q10 110 14 130 L22 130 Q24 110 22 92 Z" fill="${baseColor}"/>
-                    <path d="M106 92 Q110 110 106 130 L98 130 Q96 110 98 92 Z" fill="${baseColor}"/>
+                    <!-- Hip area -->
+                    <path d="M80 225 C72 228, 62 235, 55 248 L70 260 C72 250, 76 240, 82 232 L80 225" fill="${baseColor}"/>
+                    <path d="M120 225 C128 228, 138 235, 145 248 L130 260 C128 250, 124 240, 118 232 L120 225" fill="${baseColor}"/>
 
-                    <!-- Hands -->
-                    <ellipse cx="18" cy="138" rx="6" ry="10" fill="${baseColor}"/>
-                    <ellipse cx="102" cy="138" rx="6" ry="10" fill="${baseColor}"/>
-
-                    <!-- Hip flexors -->
-                    <path d="M45 115 Q38 125 36 135 L50 135 Q48 125 47 117 Z" fill="${baseColor}"/>
-                    <path d="M75 115 Q82 125 84 135 L70 135 Q72 125 73 117 Z" fill="${baseColor}"/>
-
-                    <!-- Quads -->
-                    <path d="M36 135 Q30 160 32 190 L50 190 Q54 160 50 135 Z" fill="${mc('quads')}"/>
-                    <path d="M84 135 Q90 160 88 190 L70 190 Q66 160 70 135 Z" fill="${mc('quads')}"/>
-                    <!-- Quad definition lines -->
-                    <path d="M41 145 Q42 165 40 185" stroke="${baseColor}" stroke-width="0.5" fill="none" opacity="0.5"/>
-                    <path d="M79 145 Q78 165 80 185" stroke="${baseColor}" stroke-width="0.5" fill="none" opacity="0.5"/>
+                    <!-- Quadriceps - Left leg -->
+                    <path d="M55 248 C48 265, 42 290, 42 320 C42 340, 45 355, 50 365 L75 365 C80 355, 85 340, 86 320 C88 295, 82 270, 70 260 L55 248" fill="${mc('quads')}"/>
+                    <!-- Quadriceps - Right leg -->
+                    <path d="M145 248 C152 265, 158 290, 158 320 C158 340, 155 355, 150 365 L125 365 C120 355, 115 340, 114 320 C112 295, 118 270, 130 260 L145 248" fill="${mc('quads')}"/>
 
                     <!-- Knees -->
-                    <ellipse cx="41" cy="193" rx="8" ry="5" fill="${baseColor}"/>
-                    <ellipse cx="79" cy="193" rx="8" ry="5" fill="${baseColor}"/>
+                    <ellipse cx="62" cy="368" rx="14" ry="8" fill="${baseColor}"/>
+                    <ellipse cx="138" cy="368" rx="14" ry="8" fill="${baseColor}"/>
 
-                    <!-- Calves (front) -->
-                    <path d="M34 198 Q30 210 34 218 L48 218 Q52 210 48 198 Z" fill="${mc('calves')}"/>
-                    <path d="M86 198 Q90 210 86 218 L72 218 Q68 210 72 198 Z" fill="${mc('calves')}"/>
+                    <!-- Calves (front/tibialis) -->
+                    <path d="M50 376 C45 385, 42 400, 44 420 C45 435, 48 448, 52 455 L72 455 C76 448, 78 435, 78 420 C78 400, 75 385, 72 376 L50 376" fill="${mc('calves')}"/>
+                    <path d="M150 376 C155 385, 158 400, 156 420 C155 435, 152 448, 148 455 L128 455 C124 448, 122 435, 122 420 C122 400, 125 385, 128 376 L150 376" fill="${mc('calves')}"/>
+
+                    <!-- Feet -->
+                    <ellipse cx="62" cy="462" rx="15" ry="8" fill="${baseColor}"/>
+                    <ellipse cx="138" cy="462" rx="15" ry="8" fill="${baseColor}"/>
                 </svg>`;
 
-            // Male Back View SVG
+            // Male Back View SVG - Anatomically realistic
             const maleBackSVG = `
-                <svg viewBox="0 0 120 220" class="anatomy-svg">
+                <svg viewBox="0 0 200 380" class="anatomy-svg">
                     <!-- Head -->
-                    <ellipse cx="60" cy="18" rx="14" ry="16" fill="${baseColor}"/>
+                    <ellipse cx="100" cy="28" rx="22" ry="26" fill="${baseColor}"/>
 
-                    <!-- Traps -->
-                    <path d="M40 32 Q60 28 80 32 L85 55 Q60 60 35 55 Z" fill="${mc('traps')}"/>
+                    <!-- Neck -->
+                    <path d="M88 52 C88 58, 85 62, 82 66 L118 66 C115 62, 112 58, 112 52" fill="${mc('traps')}"/>
 
-                    <!-- Rear Delts / Shoulders -->
-                    <ellipse cx="28" cy="52" rx="12" ry="10" fill="${mc('shoulders')}"/>
-                    <ellipse cx="92" cy="52" rx="12" ry="10" fill="${mc('shoulders')}"/>
+                    <!-- Trapezius (larger, diamond-shaped on back) -->
+                    <path d="M82 66 C65 72, 50 85, 45 100 L55 100 C60 90, 70 78, 82 72 L82 66" fill="${mc('traps')}"/>
+                    <path d="M118 66 C135 72, 150 85, 155 100 L145 100 C140 90, 130 78, 118 72 L118 66" fill="${mc('traps')}"/>
+                    <path d="M82 66 L118 66 L118 72 C112 80, 106 88, 100 95 C94 88, 88 80, 82 72 Z" fill="${mc('traps')}"/>
+
+                    <!-- Rear Deltoids -->
+                    <path d="M45 88 C32 92, 22 102, 20 118 C22 132, 28 140, 35 142 C38 132, 42 118, 45 105 C48 98, 50 92, 55 90 L45 88" fill="${mc('shoulders')}"/>
+                    <path d="M155 88 C168 92, 178 102, 180 118 C178 132, 172 140, 165 142 C162 132, 158 118, 155 105 C152 98, 150 92, 145 90 L155 88" fill="${mc('shoulders')}"/>
+
+                    <!-- Rhomboids (upper mid-back) -->
+                    <path d="M70 90 C80 88, 90 88, 100 95 C110 88, 120 88, 130 90 L130 120 C120 118, 110 115, 100 115 C90 115, 80 118, 70 120 Z" fill="${mc(['rhomboids', 'lats'])}"/>
 
                     <!-- Triceps -->
-                    <path d="M18 55 Q12 70 14 90 Q20 92 24 88 Q26 70 22 55 Z" fill="${mc('triceps')}"/>
-                    <path d="M102 55 Q108 70 106 90 Q100 92 96 88 Q94 70 98 55 Z" fill="${mc('triceps')}"/>
+                    <path d="M35 142 C28 148, 24 165, 24 180 C24 195, 28 205, 35 210 C42 207, 50 200, 52 188 C54 175, 52 160, 50 148 C48 144, 42 142, 35 142" fill="${mc('triceps')}"/>
+                    <path d="M165 142 C172 148, 176 165, 176 180 C176 195, 172 205, 165 210 C158 207, 150 200, 148 188 C146 175, 148 160, 150 148 C152 144, 158 142, 165 142" fill="${mc('triceps')}"/>
 
-                    <!-- Lats -->
-                    <path d="M35 55 Q30 75 38 100 L48 100 Q42 75 45 58 Z" fill="${mc('lats')}"/>
-                    <path d="M85 55 Q90 75 82 100 L72 100 Q78 75 75 58 Z" fill="${mc('lats')}"/>
+                    <!-- Latissimus Dorsi -->
+                    <path d="M55 100 C48 115, 45 135, 50 160 L65 175 C62 155, 60 135, 65 115 L70 100 L55 100" fill="${mc('lats')}"/>
+                    <path d="M145 100 C152 115, 155 135, 150 160 L135 175 C138 155, 140 135, 135 115 L130 100 L145 100" fill="${mc('lats')}"/>
 
-                    <!-- Middle Back (Rhomboids) -->
-                    <path d="M45 55 L75 55 L75 80 Q60 85 45 80 Z" fill="${mc(['rhomboids', 'lats'])}"/>
-
-                    <!-- Lower Back -->
-                    <path d="M45 82 L75 82 L73 110 Q60 115 47 110 Z" fill="${mc('lowerback')}"/>
-                    <!-- Spine line -->
-                    <line x1="60" y1="55" x2="60" y2="108" stroke="${baseColor}" stroke-width="1" opacity="0.5"/>
+                    <!-- Lower Back (Erector Spinae) -->
+                    <path d="M70 120 C75 135, 78 155, 80 175 L80 195 C85 200, 92 202, 100 202 C108 202, 115 200, 120 195 L120 175 C122 155, 125 135, 130 120 L130 140 C125 155, 122 175, 120 195 C115 200, 108 202, 100 202 C92 202, 85 200, 80 195 C78 175, 75 155, 70 140 Z" fill="${mc('lowerback')}"/>
 
                     <!-- Forearms -->
-                    <path d="M12 92 Q8 110 12 130 L20 130 Q22 110 20 92 Z" fill="${baseColor}"/>
-                    <path d="M108 92 Q112 110 108 130 L100 130 Q98 110 100 92 Z" fill="${baseColor}"/>
+                    <path d="M35 210 C30 220, 26 240, 26 260 C26 275, 28 288, 32 295 C38 298, 46 296, 50 290 C53 278, 53 258, 50 235 C50 225, 48 215, 44 210 C40 208, 36 208, 35 210" fill="${baseColor}"/>
+                    <path d="M165 210 C170 220, 174 240, 174 260 C174 275, 172 288, 168 295 C162 298, 154 296, 150 290 C147 278, 147 258, 150 235 C150 225, 152 215, 156 210 C160 208, 164 208, 165 210" fill="${baseColor}"/>
 
                     <!-- Hands -->
-                    <ellipse cx="16" cy="138" rx="6" ry="10" fill="${baseColor}"/>
-                    <ellipse cx="104" cy="138" rx="6" ry="10" fill="${baseColor}"/>
+                    <ellipse cx="32" cy="310" rx="10" ry="18" fill="${baseColor}"/>
+                    <ellipse cx="168" cy="310" rx="10" ry="18" fill="${baseColor}"/>
 
                     <!-- Glutes -->
-                    <ellipse cx="48" cy="125" rx="14" ry="12" fill="${mc('glutes')}"/>
-                    <ellipse cx="72" cy="125" rx="14" ry="12" fill="${mc('glutes')}"/>
+                    <path d="M65 195 C55 205, 50 220, 52 240 C55 255, 65 265, 78 268 L78 248 C72 245, 65 235, 65 220 C65 210, 68 202, 75 198 L65 195" fill="${mc('glutes')}"/>
+                    <path d="M135 195 C145 205, 150 220, 148 240 C145 255, 135 265, 122 268 L122 248 C128 245, 135 235, 135 220 C135 210, 132 202, 125 198 L135 195" fill="${mc('glutes')}"/>
+                    <path d="M78 200 C88 198, 100 198, 100 198 C100 198, 112 198, 122 200 L122 248 C115 252, 108 255, 100 255 C92 255, 85 252, 78 248 Z" fill="${mc('glutes')}"/>
 
                     <!-- Hamstrings -->
-                    <path d="M34 135 Q30 160 34 190 L52 190 Q56 160 52 135 Z" fill="${mc('hamstrings')}"/>
-                    <path d="M86 135 Q90 160 86 190 L68 190 Q64 160 68 135 Z" fill="${mc('hamstrings')}"/>
-                    <!-- Hamstring definition -->
-                    <path d="M43 145 Q43 165 43 185" stroke="${baseColor}" stroke-width="0.5" fill="none" opacity="0.5"/>
-                    <path d="M77 145 Q77 165 77 185" stroke="${baseColor}" stroke-width="0.5" fill="none" opacity="0.5"/>
+                    <path d="M52 268 C45 285, 42 310, 42 340 C42 358, 45 370, 52 378 L78 378 C82 368, 85 350, 85 330 C85 305, 80 280, 78 268 L52 268" fill="${mc('hamstrings')}"/>
+                    <path d="M148 268 C155 285, 158 310, 158 340 C158 358, 155 370, 148 378 L122 378 C118 368, 115 350, 115 330 C115 305, 120 280, 122 268 L148 268" fill="${mc('hamstrings')}"/>
 
                     <!-- Knees (back) -->
-                    <ellipse cx="43" cy="193" rx="8" ry="5" fill="${baseColor}"/>
-                    <ellipse cx="77" cy="193" rx="8" ry="5" fill="${baseColor}"/>
+                    <ellipse cx="65" cy="382" rx="14" ry="8" fill="${baseColor}"/>
+                    <ellipse cx="135" cy="382" rx="14" ry="8" fill="${baseColor}"/>
 
                     <!-- Calves -->
-                    <path d="M34 198 Q28 208 32 218 L52 218 Q56 208 50 198 Z" fill="${mc('calves')}"/>
-                    <path d="M86 198 Q92 208 88 218 L68 218 Q64 208 70 198 Z" fill="${mc('calves')}"/>
+                    <path d="M52 390 C45 402, 42 420, 44 440 C46 455, 52 465, 58 470 L72 470 C78 465, 82 455, 82 440 C82 418, 78 400, 75 390 L52 390" fill="${mc('calves')}"/>
+                    <path d="M148 390 C155 402, 158 420, 156 440 C154 455, 148 465, 142 470 L128 470 C122 465, 118 455, 118 440 C118 418, 122 400, 125 390 L148 390" fill="${mc('calves')}"/>
+
+                    <!-- Feet -->
+                    <ellipse cx="65" cy="478" rx="15" ry="8" fill="${baseColor}"/>
+                    <ellipse cx="135" cy="478" rx="15" ry="8" fill="${baseColor}"/>
                 </svg>`;
 
-            // Female Front View SVG
+            // Female Front View SVG - Anatomically realistic
             const femaleFrontSVG = `
-                <svg viewBox="0 0 120 220" class="anatomy-svg">
+                <svg viewBox="0 0 200 380" class="anatomy-svg">
                     <!-- Head -->
-                    <ellipse cx="60" cy="18" rx="13" ry="15" fill="${baseColor}"/>
+                    <ellipse cx="100" cy="28" rx="20" ry="24" fill="${baseColor}"/>
 
-                    <!-- Neck / Traps -->
-                    <path d="M53 31 L67 31 L70 40 L50 40 Z" fill="${mc('traps')}"/>
+                    <!-- Neck -->
+                    <path d="M90 50 C90 55, 88 60, 85 65 L115 65 C112 60, 110 55, 110 50" fill="${mc('traps')}"/>
 
-                    <!-- Shoulders (Delts) - slightly smaller -->
-                    <ellipse cx="32" cy="48" rx="10" ry="8" fill="${mc('shoulders')}"/>
-                    <ellipse cx="88" cy="48" rx="10" ry="8" fill="${mc('shoulders')}"/>
+                    <!-- Trapezius (smaller/more delicate) -->
+                    <path d="M85 65 C72 70, 60 78, 55 88 L72 88 C76 80, 80 72, 85 68 L85 65" fill="${mc('traps')}"/>
+                    <path d="M115 65 C128 70, 140 78, 145 88 L128 88 C124 80, 120 72, 115 68 L115 65" fill="${mc('traps')}"/>
 
-                    <!-- Chest area -->
-                    <path d="M40 44 Q60 42 80 44 L80 68 Q60 72 40 68 Z" fill="${mc('chest')}"/>
+                    <!-- Shoulders (Deltoids - narrower feminine) -->
+                    <path d="M55 88 C45 92, 38 100, 36 112 C38 124, 42 130, 48 132 C50 124, 52 112, 55 102 C58 96, 60 92, 65 90 L55 88" fill="${mc('shoulders')}"/>
+                    <path d="M145 88 C155 92, 162 100, 164 112 C162 124, 158 130, 152 132 C150 124, 148 112, 145 102 C142 96, 140 92, 135 90 L145 88" fill="${mc('shoulders')}"/>
 
-                    <!-- Biceps - more toned/slender -->
-                    <path d="M24 52 Q20 65 21 82 Q26 84 29 80 Q30 65 27 52 Z" fill="${mc('biceps')}"/>
-                    <path d="M96 52 Q100 65 99 82 Q94 84 91 80 Q90 65 93 52 Z" fill="${mc('biceps')}"/>
+                    <!-- Chest area (feminine shape) -->
+                    <path d="M65 90 C72 88, 82 87, 100 87 C118 87, 128 88, 135 90 L135 108 C128 112, 118 115, 100 115 C82 115, 72 112, 65 108 Z" fill="${mc('chest')}"/>
 
-                    <!-- Waist / Core - hourglass shape -->
-                    <path d="M42 70 Q50 68 58 70 L58 78 Q50 76 42 78 Z" fill="${mc('core')}"/>
-                    <path d="M62 70 Q70 68 78 70 L78 78 Q70 76 62 78 Z" fill="${mc('core')}"/>
-                    <path d="M44 80 Q60 76 76 80 L74 110 Q60 114 46 110 Z" fill="${mc('core')}"/>
-                    <!-- Ab definition -->
-                    <line x1="60" y1="82" x2="60" y2="108" stroke="${baseColor}" stroke-width="0.8" opacity="0.4"/>
-                    <line x1="48" y1="90" x2="72" y2="90" stroke="${baseColor}" stroke-width="0.4" opacity="0.4"/>
-                    <line x1="48" y1="100" x2="72" y2="100" stroke="${baseColor}" stroke-width="0.4" opacity="0.4"/>
+                    <!-- Biceps (toned, slender) -->
+                    <path d="M48 132 C44 138, 40 150, 40 165 C40 178, 44 186, 48 190 C54 188, 58 182, 60 172 C62 160, 60 148, 58 138 C56 134, 52 132, 48 132" fill="${mc('biceps')}"/>
+                    <path d="M152 132 C156 138, 160 150, 160 165 C160 178, 156 186, 152 190 C146 188, 142 182, 140 172 C138 160, 140 148, 142 138 C144 134, 148 132, 152 132" fill="${mc('biceps')}"/>
 
-                    <!-- Forearms - slender -->
-                    <path d="M19 84 Q16 100 18 120 L24 120 Q26 100 24 84 Z" fill="${baseColor}"/>
-                    <path d="M101 84 Q104 100 102 120 L96 120 Q94 100 96 84 Z" fill="${baseColor}"/>
+                    <!-- Forearms (slender) -->
+                    <path d="M48 190 C44 198, 40 215, 40 235 C40 250, 42 262, 45 268 C50 270, 56 268, 58 262 C62 250, 60 232, 58 212 C58 202, 56 194, 52 190 C50 188, 48 188, 48 190" fill="${baseColor}"/>
+                    <path d="M152 190 C156 198, 160 215, 160 235 C160 250, 158 262, 155 268 C150 270, 144 268, 142 262 C138 250, 140 232, 142 212 C142 202, 144 194, 148 190 C150 188, 152 188, 152 190" fill="${baseColor}"/>
 
                     <!-- Hands -->
-                    <ellipse cx="21" cy="128" rx="5" ry="9" fill="${baseColor}"/>
-                    <ellipse cx="99" cy="128" rx="5" ry="9" fill="${baseColor}"/>
+                    <ellipse cx="46" cy="282" rx="8" ry="16" fill="${baseColor}"/>
+                    <ellipse cx="154" cy="282" rx="8" ry="16" fill="${baseColor}"/>
 
-                    <!-- Hips - wider, feminine shape -->
-                    <path d="M44 110 Q34 120 32 135 L52 135 Q50 120 46 112 Z" fill="${baseColor}"/>
-                    <path d="M76 110 Q86 120 88 135 L68 135 Q70 120 74 112 Z" fill="${baseColor}"/>
+                    <!-- Waist / Core (hourglass shape) -->
+                    <path d="M65 108 C68 115, 70 122, 72 130 L72 145 C76 148, 85 150, 100 150 C115 150, 124 148, 128 145 L128 130 C130 122, 132 115, 135 108 C128 112, 118 115, 100 115 C82 115, 72 112, 65 108" fill="${mc('core')}"/>
 
-                    <!-- Quads - feminine contour -->
-                    <path d="M32 135 Q28 158 30 188 L50 188 Q54 158 52 135 Z" fill="${mc('quads')}"/>
-                    <path d="M88 135 Q92 158 90 188 L70 188 Q66 158 68 135 Z" fill="${mc('quads')}"/>
-                    <!-- Quad definition -->
-                    <path d="M40 145 Q41 165 39 183" stroke="${baseColor}" stroke-width="0.4" fill="none" opacity="0.4"/>
-                    <path d="M80 145 Q79 165 81 183" stroke="${baseColor}" stroke-width="0.4" fill="none" opacity="0.4"/>
+                    <!-- Lower abs / Core -->
+                    <path d="M72 145 C68 158, 65 175, 65 190 L65 210 C72 215, 85 218, 100 218 C115 218, 128 215, 135 210 L135 190 C135 175, 132 158, 128 145 C124 148, 115 150, 100 150 C85 150, 76 148, 72 145" fill="${mc('core')}"/>
+
+                    <!-- Hips (wider feminine shape) -->
+                    <path d="M65 210 C55 218, 48 232, 45 250 L62 260 C64 248, 68 235, 75 225 L72 218 C70 215, 68 212, 65 210" fill="${baseColor}"/>
+                    <path d="M135 210 C145 218, 152 232, 155 250 L138 260 C136 248, 132 235, 125 225 L128 218 C130 215, 132 212, 135 210" fill="${baseColor}"/>
+
+                    <!-- Quadriceps (feminine contour) -->
+                    <path d="M45 250 C40 270, 38 295, 40 325 C42 345, 48 360, 55 368 L78 368 C82 358, 86 342, 86 322 C86 295, 78 270, 62 260 L45 250" fill="${mc('quads')}"/>
+                    <path d="M155 250 C160 270, 162 295, 160 325 C158 345, 152 360, 145 368 L122 368 C118 358, 114 342, 114 322 C114 295, 122 270, 138 260 L155 250" fill="${mc('quads')}"/>
 
                     <!-- Knees -->
-                    <ellipse cx="40" cy="191" rx="7" ry="4" fill="${baseColor}"/>
-                    <ellipse cx="80" cy="191" rx="7" ry="4" fill="${baseColor}"/>
+                    <ellipse cx="66" cy="372" rx="13" ry="7" fill="${baseColor}"/>
+                    <ellipse cx="134" cy="372" rx="13" ry="7" fill="${baseColor}"/>
 
-                    <!-- Calves - shaped -->
-                    <path d="M33 195 Q30 205 33 218 L47 218 Q50 205 47 195 Z" fill="${mc('calves')}"/>
-                    <path d="M87 195 Q90 205 87 218 L73 218 Q70 205 73 195 Z" fill="${mc('calves')}"/>
+                    <!-- Calves (shaped) -->
+                    <path d="M55 380 C50 390, 48 408, 50 428 C52 442, 56 452, 60 458 L76 458 C80 452, 82 442, 82 428 C82 408, 78 390, 74 380 L55 380" fill="${mc('calves')}"/>
+                    <path d="M145 380 C150 390, 152 408, 150 428 C148 442, 144 452, 140 458 L124 458 C120 452, 118 442, 118 428 C118 408, 122 390, 126 380 L145 380" fill="${mc('calves')}"/>
+
+                    <!-- Feet -->
+                    <ellipse cx="66" cy="466" rx="14" ry="8" fill="${baseColor}"/>
+                    <ellipse cx="134" cy="466" rx="14" ry="8" fill="${baseColor}"/>
                 </svg>`;
 
-            // Female Back View SVG
+            // Female Back View SVG - Anatomically realistic
             const femaleBackSVG = `
-                <svg viewBox="0 0 120 220" class="anatomy-svg">
+                <svg viewBox="0 0 200 380" class="anatomy-svg">
                     <!-- Head -->
-                    <ellipse cx="60" cy="18" rx="13" ry="15" fill="${baseColor}"/>
+                    <ellipse cx="100" cy="28" rx="20" ry="24" fill="${baseColor}"/>
 
-                    <!-- Traps - smaller/more delicate -->
-                    <path d="M42 31 Q60 28 78 31 L82 52 Q60 56 38 52 Z" fill="${mc('traps')}"/>
+                    <!-- Neck -->
+                    <path d="M90 50 C90 55, 88 60, 85 65 L115 65 C112 60, 110 55, 110 50" fill="${mc('traps')}"/>
 
-                    <!-- Rear Delts / Shoulders -->
-                    <ellipse cx="30" cy="50" rx="10" ry="8" fill="${mc('shoulders')}"/>
-                    <ellipse cx="90" cy="50" rx="10" ry="8" fill="${mc('shoulders')}"/>
+                    <!-- Trapezius (delicate, feminine) -->
+                    <path d="M85 65 C72 70, 60 80, 55 92 L68 92 C72 84, 78 74, 85 68 L85 65" fill="${mc('traps')}"/>
+                    <path d="M115 65 C128 70, 140 80, 145 92 L132 92 C128 84, 122 74, 115 68 L115 65" fill="${mc('traps')}"/>
+                    <path d="M85 65 L115 65 L115 70 C110 78, 105 85, 100 90 C95 85, 90 78, 85 70 Z" fill="${mc('traps')}"/>
 
-                    <!-- Triceps - toned -->
-                    <path d="M22 52 Q17 65 18 82 Q23 84 26 80 Q27 65 24 52 Z" fill="${mc('triceps')}"/>
-                    <path d="M98 52 Q103 65 102 82 Q97 84 94 80 Q93 65 96 52 Z" fill="${mc('triceps')}"/>
+                    <!-- Rear Deltoids (narrower) -->
+                    <path d="M55 88 C45 92, 38 100, 36 112 C38 124, 42 130, 48 132 C50 124, 52 112, 55 102 C58 96, 60 92, 65 90 L55 88" fill="${mc('shoulders')}"/>
+                    <path d="M145 88 C155 92, 162 100, 164 112 C162 124, 158 130, 152 132 C150 124, 148 112, 145 102 C142 96, 140 92, 135 90 L145 88" fill="${mc('shoulders')}"/>
 
-                    <!-- Lats - feminine taper -->
-                    <path d="M38 52 Q34 70 40 92 L48 92 Q44 70 46 55 Z" fill="${mc('lats')}"/>
-                    <path d="M82 52 Q86 70 80 92 L72 92 Q76 70 74 55 Z" fill="${mc('lats')}"/>
+                    <!-- Rhomboids (upper mid-back) -->
+                    <path d="M72 88 C82 86, 92 86, 100 90 C108 86, 118 86, 128 88 L128 115 C120 112, 110 110, 100 110 C90 110, 80 112, 72 115 Z" fill="${mc(['rhomboids', 'lats'])}"/>
 
-                    <!-- Middle Back -->
-                    <path d="M46 52 L74 52 L74 75 Q60 80 46 75 Z" fill="${mc(['rhomboids', 'lats'])}"/>
+                    <!-- Triceps (toned) -->
+                    <path d="M48 132 C42 138, 38 152, 38 168 C38 182, 42 190, 48 195 C54 192, 60 185, 62 174 C64 162, 62 150, 60 140 C58 136, 52 132, 48 132" fill="${mc('triceps')}"/>
+                    <path d="M152 132 C158 138, 162 152, 162 168 C162 182, 158 190, 152 195 C146 192, 140 185, 138 174 C136 162, 138 150, 140 140 C142 136, 148 132, 152 132" fill="${mc('triceps')}"/>
 
-                    <!-- Lower Back - with feminine waist curve -->
-                    <path d="M46 77 L74 77 L72 105 Q60 110 48 105 Z" fill="${mc('lowerback')}"/>
-                    <!-- Spine -->
-                    <line x1="60" y1="52" x2="60" y2="103" stroke="${baseColor}" stroke-width="0.8" opacity="0.4"/>
+                    <!-- Latissimus Dorsi (feminine taper) -->
+                    <path d="M65 95 C58 108, 55 125, 58 145 L72 158 C70 140, 68 120, 72 105 L76 95 L65 95" fill="${mc('lats')}"/>
+                    <path d="M135 95 C142 108, 145 125, 142 145 L128 158 C130 140, 132 120, 128 105 L124 95 L135 95" fill="${mc('lats')}"/>
+
+                    <!-- Lower Back (with feminine waist curve) -->
+                    <path d="M72 115 C76 130, 78 148, 80 165 L80 185 C85 190, 92 192, 100 192 C108 192, 115 190, 120 185 L120 165 C122 148, 124 130, 128 115 L128 135 C125 150, 122 168, 120 185 C115 190, 108 192, 100 192 C92 192, 85 190, 80 185 C78 168, 75 150, 72 135 Z" fill="${mc('lowerback')}"/>
 
                     <!-- Forearms -->
-                    <path d="M16 84 Q13 100 15 120 L21 120 Q23 100 21 84 Z" fill="${baseColor}"/>
-                    <path d="M104 84 Q107 100 105 120 L99 120 Q97 100 99 84 Z" fill="${baseColor}"/>
+                    <path d="M48 195 C44 204, 40 220, 40 240 C40 255, 42 268, 45 275 C50 278, 56 276, 58 270 C62 258, 60 240, 58 220 C58 210, 56 200, 52 195 C50 192, 48 192, 48 195" fill="${baseColor}"/>
+                    <path d="M152 195 C156 204, 160 220, 160 240 C160 255, 158 268, 155 275 C150 278, 144 276, 142 270 C138 258, 140 240, 142 220 C142 210, 144 200, 148 195 C150 192, 152 192, 152 195" fill="${baseColor}"/>
 
                     <!-- Hands -->
-                    <ellipse cx="18" cy="128" rx="5" ry="9" fill="${baseColor}"/>
-                    <ellipse cx="102" cy="128" rx="5" ry="9" fill="${baseColor}"/>
+                    <ellipse cx="46" cy="290" rx="8" ry="16" fill="${baseColor}"/>
+                    <ellipse cx="154" cy="290" rx="8" ry="16" fill="${baseColor}"/>
 
-                    <!-- Glutes - feminine shape, rounder -->
-                    <ellipse cx="46" cy="122" rx="16" ry="14" fill="${mc('glutes')}"/>
-                    <ellipse cx="74" cy="122" rx="16" ry="14" fill="${mc('glutes')}"/>
+                    <!-- Glutes (feminine shape, rounder) -->
+                    <path d="M70 185 C58 195, 52 212, 54 235 C56 252, 66 265, 80 270 L80 250 C72 246, 65 235, 65 218 C65 205, 70 195, 78 190 L70 185" fill="${mc('glutes')}"/>
+                    <path d="M130 185 C142 195, 148 212, 146 235 C144 252, 134 265, 120 270 L120 250 C128 246, 135 235, 135 218 C135 205, 130 195, 122 190 L130 185" fill="${mc('glutes')}"/>
+                    <path d="M80 190 C90 188, 100 188, 100 188 C100 188, 110 188, 120 190 L120 250 C112 255, 106 258, 100 258 C94 258, 88 255, 80 250 Z" fill="${mc('glutes')}"/>
 
-                    <!-- Hamstrings - feminine contour -->
-                    <path d="M30 135 Q27 158 30 188 L50 188 Q54 158 52 135 Z" fill="${mc('hamstrings')}"/>
-                    <path d="M90 135 Q93 158 90 188 L70 188 Q66 158 68 135 Z" fill="${mc('hamstrings')}"/>
-                    <!-- Hamstring definition -->
-                    <path d="M40 145 Q40 165 40 183" stroke="${baseColor}" stroke-width="0.4" fill="none" opacity="0.4"/>
-                    <path d="M80 145 Q80 165 80 183" stroke="${baseColor}" stroke-width="0.4" fill="none" opacity="0.4"/>
+                    <!-- Hamstrings (feminine contour) -->
+                    <path d="M54 270 C46 288, 42 315, 44 345 C46 362, 52 375, 58 382 L82 382 C86 372, 88 355, 88 335 C88 310, 82 285, 80 270 L54 270" fill="${mc('hamstrings')}"/>
+                    <path d="M146 270 C154 288, 158 315, 156 345 C154 362, 148 375, 142 382 L118 382 C114 372, 112 355, 112 335 C112 310, 118 285, 120 270 L146 270" fill="${mc('hamstrings')}"/>
 
-                    <!-- Knees -->
-                    <ellipse cx="40" cy="191" rx="7" ry="4" fill="${baseColor}"/>
-                    <ellipse cx="80" cy="191" rx="7" ry="4" fill="${baseColor}"/>
+                    <!-- Knees (back) -->
+                    <ellipse cx="68" cy="386" rx="13" ry="7" fill="${baseColor}"/>
+                    <ellipse cx="132" cy="386" rx="13" ry="7" fill="${baseColor}"/>
 
-                    <!-- Calves - shaped -->
-                    <path d="M32 195 Q26 206 30 218 L50 218 Q54 206 48 195 Z" fill="${mc('calves')}"/>
-                    <path d="M88 195 Q94 206 90 218 L70 218 Q66 206 72 195 Z" fill="${mc('calves')}"/>
+                    <!-- Calves (shaped) -->
+                    <path d="M58 394 C50 406, 48 424, 50 445 C52 458, 58 468, 64 472 L80 472 C86 468, 90 458, 90 445 C90 422, 84 404, 78 394 L58 394" fill="${mc('calves')}"/>
+                    <path d="M142 394 C150 406, 152 424, 150 445 C148 458, 142 468, 136 472 L120 472 C114 468, 110 458, 110 445 C110 422, 116 404, 122 394 L142 394" fill="${mc('calves')}"/>
+
+                    <!-- Feet -->
+                    <ellipse cx="68" cy="480" rx="14" ry="8" fill="${baseColor}"/>
+                    <ellipse cx="132" cy="480" rx="14" ry="8" fill="${baseColor}"/>
                 </svg>`;
 
             const frontSVG = isMale ? maleFrontSVG : femaleFrontSVG;
