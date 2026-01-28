@@ -1412,9 +1412,9 @@
             // Clear existing charts
             container.innerHTML = '';
 
-            // Get exercises that have been performed at least once
+            // Get exercises that have been performed at least once with weight data
             const exercisesWithData = EXERCISES.filter(ex => {
-                return workouts.some(w => w.exercises[ex.id] && w.exercises[ex.id].reps > 0);
+                return workouts.some(w => w.exercises[ex.id] && (w.exercises[ex.id].weight > 0 || w.exercises[ex.id].reps > 0));
             });
 
             if (exercisesWithData.length === 0) {
@@ -1436,7 +1436,7 @@
                 chartContainer.className = 'chart-container';
 
                 const title = document.createElement('h3');
-                title.textContent = ex.name;
+                title.textContent = ex.name + ' (kg)';
                 chartContainer.appendChild(title);
 
                 const canvas = document.createElement('canvas');
@@ -1450,14 +1450,14 @@
                 setTimeout(() => {
                     const ctx = canvas.getContext('2d');
                     const exerciseData = workouts
-                        .filter(w => w.exercises[ex.id] && w.exercises[ex.id].reps > 0)
+                        .filter(w => w.exercises[ex.id] && (w.exercises[ex.id].weight > 0 || w.exercises[ex.id].reps > 0))
                         .map(w => ({
                             date: new Date(w.date),
-                            reps: w.exercises[ex.id].reps
+                            weight: w.exercises[ex.id].weight || 0
                         }))
                         .slice(-10); // Last 10 entries
 
-                    drawLineChart(ctx, canvas, exerciseData, 'reps', 'Reps');
+                    drawLineChart(ctx, canvas, exerciseData, 'weight', 'kg');
                 }, 0);
             });
         }
