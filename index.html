@@ -915,6 +915,37 @@
                 </div>
 
                 <div class="settings-section">
+                    <h3>Body Measurements</h3>
+                    <p style="color: #b2bec3; font-size: 14px; margin-bottom: 16px;">Track your body measurements over time</p>
+                    <div class="form-group">
+                        <label>Body Weight (kg)</label>
+                        <input type="number" id="measureWeight" placeholder="e.g. 75" step="0.1">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label>Arms (cm)</label>
+                            <input type="number" id="measureArms" placeholder="e.g. 35" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Chest (cm)</label>
+                            <input type="number" id="measureChest" placeholder="e.g. 100" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Waist (cm)</label>
+                            <input type="number" id="measureWaist" placeholder="e.g. 80" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Thigh (cm)</label>
+                            <input type="number" id="measureThigh" placeholder="e.g. 55" step="0.1">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-block" onclick="saveMeasurements()">
+                        Save Measurements
+                    </button>
+                    <div id="lastMeasurementDate" style="color: #b2bec3; font-size: 12px; margin-top: 8px; text-align: center;"></div>
+                </div>
+
+                <div class="settings-section">
                     <h3>Data Management</h3>
                     <div class="settings-item">
                         <span>Export Data</span>
@@ -997,6 +1028,7 @@
             { id: 'leg_press', name: 'Leg Press', muscles: ['quads', 'glutes'], primary: true },
             { id: 'lat_pulldown', name: 'Lat Pulldown', muscles: ['lats', 'biceps'], primary: true },
             { id: 'cable_row', name: 'Seated Cable Row / Barbell Row', muscles: ['lats', 'rhomboids', 'biceps'], primary: true },
+            { id: 'chest_press', name: 'Machine Chest Press', muscles: ['chest', 'triceps', 'shoulders'], primary: true },
             // Accessory movements
             { id: 'lateral_raise', name: 'Lateral Raises', muscles: ['shoulders'], primary: false },
             { id: 'hamstring_curl', name: 'Hamstring Curl Machine', muscles: ['hamstrings'], primary: false },
@@ -1345,6 +1377,8 @@
                 loadProgressPage();
             } else if (page === 'history') {
                 loadHistoryPage();
+            } else if (page === 'settings') {
+                loadMeasurementsPage();
             }
         }
 
@@ -1460,7 +1494,8 @@
                         .filter(w => w.exercises[ex.id] && (w.exercises[ex.id].weight > 0 || w.exercises[ex.id].reps > 0))
                         .map(w => ({
                             date: new Date(w.date),
-                            weight: w.exercises[ex.id].weight || 0
+                            weight: w.exercises[ex.id].weight || 0,
+                            reps: w.exercises[ex.id].reps || 0
                         }))
                         .slice(-10); // Last 10 entries
 
@@ -1538,15 +1573,37 @@
             });
             ctx.stroke();
 
-            // Draw points
-            ctx.fillStyle = '#6c5ce7';
+            // Draw points with color gradation based on reps
+            // Calculate min/max reps for color scaling
+            const repsValues = data.map(d => d.reps || 0);
+            const minReps = Math.min(...repsValues);
+            const maxReps = Math.max(...repsValues);
+            const repsRange = maxReps - minReps || 1;
+
             data.forEach((d, i) => {
                 const x = padding + (width - 2 * padding) * (i / (data.length - 1 || 1));
                 const y = padding + (height - 2 * padding) * (1 - (d[valueKey] - minVal) / (maxVal - minVal || 1));
 
+                // Calculate color based on reps (lighter = fewer reps, darker = more reps)
+                const reps = d.reps || 0;
+                const intensity = (reps - minReps) / repsRange;
+                // Interpolate from light purple (#a29bfe) to dark purple (#6c5ce7)
+                const r = Math.round(162 - (162 - 108) * intensity);
+                const g = Math.round(155 - (155 - 92) * intensity);
+                const b = Math.round(254 - (254 - 231) * intensity);
+                ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+
                 ctx.beginPath();
-                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
                 ctx.fill();
+
+                // Add reps label above point
+                if (reps > 0) {
+                    ctx.fillStyle = '#b2bec3';
+                    ctx.font = '9px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(reps + 'r', x, y - 8);
+                }
             });
 
             // Draw labels
@@ -2021,6 +2078,65 @@
             saveData(data);
             updateUserDisplay();
             showToast('Settings saved!');
+        }
+
+        function saveMeasurements() {
+            const weight = parseFloat(document.getElementById('measureWeight').value) || 0;
+            const arms = parseFloat(document.getElementById('measureArms').value) || 0;
+            const chest = parseFloat(document.getElementById('measureChest').value) || 0;
+            const waist = parseFloat(document.getElementById('measureWaist').value) || 0;
+            const thigh = parseFloat(document.getElementById('measureThigh').value) || 0;
+
+            if (weight === 0 && arms === 0 && chest === 0 && waist === 0 && thigh === 0) {
+                showToast('Please enter at least one measurement', 'warning');
+                return;
+            }
+
+            const data = loadData();
+            if (!data.measurements) {
+                data.measurements = [];
+            }
+
+            const measurement = {
+                date: new Date().toISOString(),
+                weight,
+                arms,
+                chest,
+                waist,
+                thigh
+            };
+
+            data.measurements.push(measurement);
+            saveData(data);
+
+            // Update the last measurement date display
+            updateLastMeasurementDisplay();
+            showToast('Measurements saved!');
+        }
+
+        function loadMeasurementsPage() {
+            const data = loadData();
+            if (data && data.measurements && data.measurements.length > 0) {
+                const latest = data.measurements[data.measurements.length - 1];
+                document.getElementById('measureWeight').value = latest.weight || '';
+                document.getElementById('measureArms').value = latest.arms || '';
+                document.getElementById('measureChest').value = latest.chest || '';
+                document.getElementById('measureWaist').value = latest.waist || '';
+                document.getElementById('measureThigh').value = latest.thigh || '';
+            }
+            updateLastMeasurementDisplay();
+        }
+
+        function updateLastMeasurementDisplay() {
+            const data = loadData();
+            const lastDateEl = document.getElementById('lastMeasurementDate');
+            if (data && data.measurements && data.measurements.length > 0) {
+                const latest = data.measurements[data.measurements.length - 1];
+                const date = new Date(latest.date);
+                lastDateEl.textContent = `Last recorded: ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+            } else {
+                lastDateEl.textContent = '';
+            }
         }
 
         function closeModal() {
