@@ -534,15 +534,8 @@
         }
 
         .anatomy-svg {
-            width: 160px;
+            width: 140px;
             height: auto;
-        }
-
-        .anatomy-svg path,
-        .anatomy-svg ellipse {
-            stroke: #f0f0f0;
-            stroke-width: 0.8;
-            stroke-linejoin: round;
         }
 
         .muscle-label {
@@ -1625,8 +1618,10 @@
                 });
 
             const isMale = user.gender === 'male';
-            const baseColor = '#5a6b7c';
+            const baseColor = '#4a5568';
+            const skinColor = '#5a6577';
             const activeColor = 'var(--success)';
+            const strokeColor = '#2d3748';
 
             // Helper function to get muscle color
             const mc = (muscles) => {
@@ -1634,251 +1629,151 @@
                 return muscleList.some(m => recentMuscles.has(m)) ? activeColor : baseColor;
             };
 
-            // Male Front View SVG - Clean anatomical style
+            // Male Front View - Anatomical style based on medical diagrams
             const maleFrontSVG = `
-                <svg viewBox="0 0 120 260" class="anatomy-svg">
+                <svg viewBox="0 0 100 220" class="anatomy-svg">
+                    <defs>
+                        <style>
+                            .muscle { stroke: ${strokeColor}; stroke-width: 0.5; }
+                            .body-part { stroke: ${strokeColor}; stroke-width: 0.3; }
+                        </style>
+                    </defs>
+
                     <!-- Head -->
-                    <ellipse cx="60" cy="16" rx="12" ry="14" fill="${baseColor}"/>
+                    <ellipse cx="50" cy="14" rx="10" ry="12" fill="${skinColor}" class="body-part"/>
 
-                    <!-- Neck -->
-                    <rect x="54" y="28" width="12" height="10" fill="${mc('traps')}"/>
+                    <!-- Neck / Upper Traps -->
+                    <path d="M44 24 L44 32 L56 32 L56 24" fill="${skinColor}" class="body-part"/>
 
-                    <!-- Trapezius -->
-                    <polygon points="42,38 54,38 54,45 42,50" fill="${mc('traps')}"/>
-                    <polygon points="78,38 66,38 66,45 78,50" fill="${mc('traps')}"/>
+                    <!-- Trapezius (visible from front) -->
+                    <path d="M35 32 L44 32 L44 40 L35 38 Z" fill="${mc('traps')}" class="muscle"/>
+                    <path d="M65 32 L56 32 L56 40 L65 38 Z" fill="${mc('traps')}" class="muscle"/>
 
-                    <!-- Shoulders -->
-                    <ellipse cx="32" cy="52" rx="12" ry="18" fill="${mc('shoulders')}"/>
-                    <ellipse cx="88" cy="52" rx="12" ry="18" fill="${mc('shoulders')}"/>
+                    <!-- Deltoids (Shoulders) -->
+                    <ellipse cx="28" cy="42" rx="9" ry="12" fill="${mc('shoulders')}" class="muscle"/>
+                    <ellipse cx="72" cy="42" rx="9" ry="12" fill="${mc('shoulders')}" class="muscle"/>
 
-                    <!-- Chest -->
-                    <ellipse cx="45" cy="55" rx="12" ry="16" fill="${mc('chest')}"/>
-                    <ellipse cx="75" cy="55" rx="12" ry="16" fill="${mc('chest')}"/>
+                    <!-- Pectoralis Major (Chest) -->
+                    <path d="M35 38 L44 40 L48 52 L35 52 L30 46 Z" fill="${mc('chest')}" class="muscle"/>
+                    <path d="M65 38 L56 40 L52 52 L65 52 L70 46 Z" fill="${mc('chest')}" class="muscle"/>
 
                     <!-- Biceps -->
-                    <ellipse cx="24" cy="82" rx="7" ry="18" fill="${mc('biceps')}"/>
-                    <ellipse cx="96" cy="82" rx="7" ry="18" fill="${mc('biceps')}"/>
+                    <path d="M22 52 Q19 62, 20 72 Q21 80, 24 82 Q27 80, 28 72 Q29 62, 26 52 Z" fill="${mc('biceps')}" class="muscle"/>
+                    <path d="M78 52 Q81 62, 80 72 Q79 80, 76 82 Q73 80, 72 72 Q71 62, 74 52 Z" fill="${mc('biceps')}" class="muscle"/>
 
                     <!-- Forearms -->
-                    <ellipse cx="22" cy="118" rx="6" ry="20" fill="${baseColor}"/>
-                    <ellipse cx="98" cy="118" rx="6" ry="20" fill="${baseColor}"/>
+                    <path d="M20 82 Q18 95, 17 108 Q19 112, 22 108 Q24 95, 26 82 Z" fill="${skinColor}" class="body-part"/>
+                    <path d="M80 82 Q82 95, 83 108 Q81 112, 78 108 Q76 95, 74 82 Z" fill="${skinColor}" class="body-part"/>
 
                     <!-- Hands -->
-                    <ellipse cx="20" cy="148" rx="5" ry="8" fill="${baseColor}"/>
-                    <ellipse cx="100" cy="148" rx="5" ry="8" fill="${baseColor}"/>
+                    <ellipse cx="19" cy="118" rx="4" ry="7" fill="${skinColor}" class="body-part"/>
+                    <ellipse cx="81" cy="118" rx="4" ry="7" fill="${skinColor}" class="body-part"/>
 
-                    <!-- Core/Abs -->
-                    <rect x="42" y="70" width="36" height="14" rx="3" fill="${mc('core')}"/>
-                    <rect x="42" y="86" width="36" height="14" rx="3" fill="${mc('core')}"/>
-                    <rect x="44" y="102" width="32" height="14" rx="3" fill="${mc('core')}"/>
+                    <!-- Serratus Anterior -->
+                    <path d="M30 52 L35 52 L36 66 L30 64 Z" fill="${mc('core')}" class="muscle"/>
+                    <path d="M70 52 L65 52 L64 66 L70 64 Z" fill="${mc('core')}" class="muscle"/>
 
-                    <!-- Obliques -->
-                    <ellipse cx="38" cy="90" rx="5" ry="20" fill="${mc('core')}"/>
-                    <ellipse cx="82" cy="90" rx="5" ry="20" fill="${mc('core')}"/>
+                    <!-- Rectus Abdominis (Abs) -->
+                    <rect x="40" y="52" width="20" height="10" rx="2" fill="${mc('core')}" class="muscle"/>
+                    <rect x="40" y="64" width="20" height="10" rx="2" fill="${mc('core')}" class="muscle"/>
+                    <rect x="41" y="76" width="18" height="10" rx="2" fill="${mc('core')}" class="muscle"/>
 
-                    <!-- Hips -->
-                    <ellipse cx="45" cy="122" rx="10" ry="8" fill="${baseColor}"/>
-                    <ellipse cx="75" cy="122" rx="10" ry="8" fill="${baseColor}"/>
+                    <!-- External Obliques -->
+                    <path d="M36 52 L40 52 L40 88 L36 86 L30 64 Z" fill="${mc('core')}" class="muscle"/>
+                    <path d="M64 52 L60 52 L60 88 L64 86 L70 64 Z" fill="${mc('core')}" class="muscle"/>
 
-                    <!-- Quadriceps -->
-                    <ellipse cx="42" cy="165" rx="14" ry="38" fill="${mc('quads')}"/>
-                    <ellipse cx="78" cy="165" rx="14" ry="38" fill="${mc('quads')}"/>
+                    <!-- Hip / Pelvis -->
+                    <path d="M36 86 L40 88 L50 90 L60 88 L64 86 L64 98 L56 100 L50 98 L44 100 L36 98 Z" fill="${skinColor}" class="body-part"/>
+
+                    <!-- Quadriceps (Rectus Femoris + Vastus) -->
+                    <path d="M36 98 L44 100 L46 145 L36 148 L32 130 Z" fill="${mc('quads')}" class="muscle"/>
+                    <path d="M64 98 L56 100 L54 145 L64 148 L68 130 Z" fill="${mc('quads')}" class="muscle"/>
+                    <!-- Inner Quad -->
+                    <path d="M44 100 L50 98 L50 140 L46 145 Z" fill="${mc('quads')}" class="muscle"/>
+                    <path d="M56 100 L50 98 L50 140 L54 145 Z" fill="${mc('quads')}" class="muscle"/>
 
                     <!-- Knees -->
-                    <ellipse cx="42" cy="205" rx="10" ry="6" fill="${baseColor}"/>
-                    <ellipse cx="78" cy="205" rx="10" ry="6" fill="${baseColor}"/>
+                    <ellipse cx="40" cy="152" rx="8" ry="5" fill="${skinColor}" class="body-part"/>
+                    <ellipse cx="60" cy="152" rx="8" ry="5" fill="${skinColor}" class="body-part"/>
 
-                    <!-- Calves -->
-                    <ellipse cx="42" cy="228" rx="9" ry="18" fill="${mc('calves')}"/>
-                    <ellipse cx="78" cy="228" rx="9" ry="18" fill="${mc('calves')}"/>
+                    <!-- Tibialis Anterior / Calves (front) -->
+                    <path d="M34 157 L46 157 L44 190 L36 190 Z" fill="${mc('calves')}" class="muscle"/>
+                    <path d="M66 157 L54 157 L56 190 L64 190 Z" fill="${mc('calves')}" class="muscle"/>
 
                     <!-- Feet -->
-                    <ellipse cx="42" cy="252" rx="10" ry="5" fill="${baseColor}"/>
-                    <ellipse cx="78" cy="252" rx="10" ry="5" fill="${baseColor}"/>
+                    <ellipse cx="40" cy="198" rx="8" ry="5" fill="${skinColor}" class="body-part"/>
+                    <ellipse cx="60" cy="198" rx="8" ry="5" fill="${skinColor}" class="body-part"/>
                 </svg>`;
 
-            // Male Back View SVG - Clean anatomical style
+            // Male Back View - Anatomical style
             const maleBackSVG = `
-                <svg viewBox="0 0 120 260" class="anatomy-svg">
+                <svg viewBox="0 0 100 220" class="anatomy-svg">
+                    <defs>
+                        <style>
+                            .muscle { stroke: ${strokeColor}; stroke-width: 0.5; }
+                            .body-part { stroke: ${strokeColor}; stroke-width: 0.3; }
+                        </style>
+                    </defs>
+
                     <!-- Head -->
-                    <ellipse cx="60" cy="16" rx="12" ry="14" fill="${baseColor}"/>
+                    <ellipse cx="50" cy="14" rx="10" ry="12" fill="${skinColor}" class="body-part"/>
 
                     <!-- Neck -->
-                    <rect x="54" y="28" width="12" height="10" fill="${mc('traps')}"/>
+                    <path d="M44 24 L44 32 L56 32 L56 24" fill="${skinColor}" class="body-part"/>
 
-                    <!-- Trapezius -->
-                    <polygon points="35,38 60,38 60,65 35,55" fill="${mc('traps')}"/>
-                    <polygon points="85,38 60,38 60,65 85,55" fill="${mc('traps')}"/>
+                    <!-- Trapezius (large diamond shape) -->
+                    <path d="M30 32 L50 28 L70 32 L70 42 L50 55 L30 42 Z" fill="${mc('traps')}" class="muscle"/>
 
-                    <!-- Rear Shoulders -->
-                    <ellipse cx="32" cy="52" rx="12" ry="18" fill="${mc('shoulders')}"/>
-                    <ellipse cx="88" cy="52" rx="12" ry="18" fill="${mc('shoulders')}"/>
+                    <!-- Rear Deltoids -->
+                    <ellipse cx="26" cy="42" rx="8" ry="12" fill="${mc('shoulders')}" class="muscle"/>
+                    <ellipse cx="74" cy="42" rx="8" ry="12" fill="${mc('shoulders')}" class="muscle"/>
 
-                    <!-- Upper Back / Rhomboids -->
-                    <rect x="40" y="50" width="40" height="20" rx="4" fill="${mc(['rhomboids', 'lats'])}"/>
+                    <!-- Rhomboids / Upper Back -->
+                    <path d="M38 42 L50 55 L62 42 L62 55 L50 62 L38 55 Z" fill="${mc(['rhomboids', 'lats'])}" class="muscle"/>
 
                     <!-- Triceps -->
-                    <ellipse cx="24" cy="82" rx="7" ry="18" fill="${mc('triceps')}"/>
-                    <ellipse cx="96" cy="82" rx="7" ry="18" fill="${mc('triceps')}"/>
+                    <path d="M20 50 Q17 62, 18 74 Q20 80, 24 78 Q27 74, 26 62 Q25 54, 22 50 Z" fill="${mc('triceps')}" class="muscle"/>
+                    <path d="M80 50 Q83 62, 82 74 Q80 80, 76 78 Q73 74, 74 62 Q75 54, 78 50 Z" fill="${mc('triceps')}" class="muscle"/>
 
-                    <!-- Lats -->
-                    <polygon points="35,70 45,70 48,105 35,100" fill="${mc('lats')}"/>
-                    <polygon points="85,70 75,70 72,105 85,100" fill="${mc('lats')}"/>
+                    <!-- Latissimus Dorsi (Lats) -->
+                    <path d="M30 42 L38 55 L38 75 L32 82 L26 70 Z" fill="${mc('lats')}" class="muscle"/>
+                    <path d="M70 42 L62 55 L62 75 L68 82 L74 70 Z" fill="${mc('lats')}" class="muscle"/>
 
-                    <!-- Lower Back -->
-                    <rect x="48" y="70" width="24" height="40" rx="4" fill="${mc('lowerback')}"/>
+                    <!-- Erector Spinae (Lower Back) -->
+                    <path d="M38 55 L50 62 L62 55 L62 75 L50 82 L38 75 Z" fill="${mc('lowerback')}" class="muscle"/>
 
                     <!-- Forearms -->
-                    <ellipse cx="22" cy="118" rx="6" ry="20" fill="${baseColor}"/>
-                    <ellipse cx="98" cy="118" rx="6" ry="20" fill="${baseColor}"/>
+                    <path d="M18 78 Q16 92, 16 106 Q18 110, 21 106 Q23 92, 24 78 Z" fill="${skinColor}" class="body-part"/>
+                    <path d="M82 78 Q84 92, 84 106 Q82 110, 79 106 Q77 92, 76 78 Z" fill="${skinColor}" class="body-part"/>
 
                     <!-- Hands -->
-                    <ellipse cx="20" cy="148" rx="5" ry="8" fill="${baseColor}"/>
-                    <ellipse cx="100" cy="148" rx="5" ry="8" fill="${baseColor}"/>
+                    <ellipse cx="18" cy="116" rx="4" ry="7" fill="${skinColor}" class="body-part"/>
+                    <ellipse cx="82" cy="116" rx="4" ry="7" fill="${skinColor}" class="body-part"/>
 
-                    <!-- Glutes -->
-                    <ellipse cx="45" cy="125" rx="16" ry="14" fill="${mc('glutes')}"/>
-                    <ellipse cx="75" cy="125" rx="16" ry="14" fill="${mc('glutes')}"/>
+                    <!-- Gluteus Maximus -->
+                    <ellipse cx="40" cy="95" rx="12" ry="10" fill="${mc('glutes')}" class="muscle"/>
+                    <ellipse cx="60" cy="95" rx="12" ry="10" fill="${mc('glutes')}" class="muscle"/>
 
                     <!-- Hamstrings -->
-                    <ellipse cx="42" cy="168" rx="14" ry="35" fill="${mc('hamstrings')}"/>
-                    <ellipse cx="78" cy="168" rx="14" ry="35" fill="${mc('hamstrings')}"/>
+                    <path d="M30 104 L46 104 L44 148 L32 148 Z" fill="${mc('hamstrings')}" class="muscle"/>
+                    <path d="M70 104 L54 104 L56 148 L68 148 Z" fill="${mc('hamstrings')}" class="muscle"/>
 
-                    <!-- Knees -->
-                    <ellipse cx="42" cy="205" rx="10" ry="6" fill="${baseColor}"/>
-                    <ellipse cx="78" cy="205" rx="10" ry="6" fill="${baseColor}"/>
+                    <!-- Knees (back) -->
+                    <ellipse cx="38" cy="152" rx="8" ry="4" fill="${skinColor}" class="body-part"/>
+                    <ellipse cx="62" cy="152" rx="8" ry="4" fill="${skinColor}" class="body-part"/>
 
-                    <!-- Calves -->
-                    <ellipse cx="42" cy="228" rx="10" ry="18" fill="${mc('calves')}"/>
-                    <ellipse cx="78" cy="228" rx="10" ry="18" fill="${mc('calves')}"/>
-
-                    <!-- Feet -->
-                    <ellipse cx="42" cy="252" rx="10" ry="5" fill="${baseColor}"/>
-                    <ellipse cx="78" cy="252" rx="10" ry="5" fill="${baseColor}"/>
-                </svg>`;
-
-            // Female Front View SVG - Clean anatomical style
-            const femaleFrontSVG = `
-                <svg viewBox="0 0 120 260" class="anatomy-svg">
-                    <!-- Head -->
-                    <ellipse cx="60" cy="16" rx="11" ry="13" fill="${baseColor}"/>
-
-                    <!-- Neck -->
-                    <rect x="55" y="27" width="10" height="10" fill="${mc('traps')}"/>
-
-                    <!-- Trapezius -->
-                    <polygon points="45,37 55,37 55,44 45,48" fill="${mc('traps')}"/>
-                    <polygon points="75,37 65,37 65,44 75,48" fill="${mc('traps')}"/>
-
-                    <!-- Shoulders -->
-                    <ellipse cx="35" cy="50" rx="10" ry="15" fill="${mc('shoulders')}"/>
-                    <ellipse cx="85" cy="50" rx="10" ry="15" fill="${mc('shoulders')}"/>
-
-                    <!-- Chest -->
-                    <ellipse cx="47" cy="55" rx="10" ry="12" fill="${mc('chest')}"/>
-                    <ellipse cx="73" cy="55" rx="10" ry="12" fill="${mc('chest')}"/>
-
-                    <!-- Biceps -->
-                    <ellipse cx="27" cy="78" rx="6" ry="15" fill="${mc('biceps')}"/>
-                    <ellipse cx="93" cy="78" rx="6" ry="15" fill="${mc('biceps')}"/>
-
-                    <!-- Forearms -->
-                    <ellipse cx="25" cy="110" rx="5" ry="18" fill="${baseColor}"/>
-                    <ellipse cx="95" cy="110" rx="5" ry="18" fill="${baseColor}"/>
-
-                    <!-- Hands -->
-                    <ellipse cx="24" cy="138" rx="4" ry="7" fill="${baseColor}"/>
-                    <ellipse cx="96" cy="138" rx="4" ry="7" fill="${baseColor}"/>
-
-                    <!-- Core/Abs -->
-                    <rect x="45" y="68" width="30" height="12" rx="3" fill="${mc('core')}"/>
-                    <rect x="45" y="82" width="30" height="12" rx="3" fill="${mc('core')}"/>
-                    <rect x="47" y="96" width="26" height="12" rx="3" fill="${mc('core')}"/>
-
-                    <!-- Obliques -->
-                    <ellipse cx="42" cy="88" rx="4" ry="16" fill="${mc('core')}"/>
-                    <ellipse cx="78" cy="88" rx="4" ry="16" fill="${mc('core')}"/>
-
-                    <!-- Hips -->
-                    <ellipse cx="47" cy="118" rx="12" ry="10" fill="${baseColor}"/>
-                    <ellipse cx="73" cy="118" rx="12" ry="10" fill="${baseColor}"/>
-
-                    <!-- Quadriceps -->
-                    <ellipse cx="44" cy="162" rx="13" ry="36" fill="${mc('quads')}"/>
-                    <ellipse cx="76" cy="162" rx="13" ry="36" fill="${mc('quads')}"/>
-
-                    <!-- Knees -->
-                    <ellipse cx="44" cy="200" rx="9" ry="5" fill="${baseColor}"/>
-                    <ellipse cx="76" cy="200" rx="9" ry="5" fill="${baseColor}"/>
-
-                    <!-- Calves -->
-                    <ellipse cx="44" cy="222" rx="8" ry="16" fill="${mc('calves')}"/>
-                    <ellipse cx="76" cy="222" rx="8" ry="16" fill="${mc('calves')}"/>
+                    <!-- Gastrocnemius (Calves) -->
+                    <path d="M32 156 L44 156 L42 185 L34 185 Z" fill="${mc('calves')}" class="muscle"/>
+                    <path d="M68 156 L56 156 L58 185 L66 185 Z" fill="${mc('calves')}" class="muscle"/>
 
                     <!-- Feet -->
-                    <ellipse cx="44" cy="246" rx="9" ry="5" fill="${baseColor}"/>
-                    <ellipse cx="76" cy="246" rx="9" ry="5" fill="${baseColor}"/>
+                    <ellipse cx="38" cy="194" rx="8" ry="5" fill="${skinColor}" class="body-part"/>
+                    <ellipse cx="62" cy="194" rx="8" ry="5" fill="${skinColor}" class="body-part"/>
                 </svg>`;
 
-            // Female Back View SVG - Clean anatomical style
-            const femaleBackSVG = `
-                <svg viewBox="0 0 120 260" class="anatomy-svg">
-                    <!-- Head -->
-                    <ellipse cx="60" cy="16" rx="11" ry="13" fill="${baseColor}"/>
-
-                    <!-- Neck -->
-                    <rect x="55" y="27" width="10" height="10" fill="${mc('traps')}"/>
-
-                    <!-- Trapezius -->
-                    <polygon points="38,37 60,37 60,62 38,52" fill="${mc('traps')}"/>
-                    <polygon points="82,37 60,37 60,62 82,52" fill="${mc('traps')}"/>
-
-                    <!-- Rear Shoulders -->
-                    <ellipse cx="35" cy="50" rx="10" ry="15" fill="${mc('shoulders')}"/>
-                    <ellipse cx="85" cy="50" rx="10" ry="15" fill="${mc('shoulders')}"/>
-
-                    <!-- Upper Back / Rhomboids -->
-                    <rect x="42" y="48" width="36" height="18" rx="4" fill="${mc(['rhomboids', 'lats'])}"/>
-
-                    <!-- Triceps -->
-                    <ellipse cx="27" cy="78" rx="6" ry="15" fill="${mc('triceps')}"/>
-                    <ellipse cx="93" cy="78" rx="6" ry="15" fill="${mc('triceps')}"/>
-
-                    <!-- Lats -->
-                    <polygon points="38,66 46,66 48,100 38,95" fill="${mc('lats')}"/>
-                    <polygon points="82,66 74,66 72,100 82,95" fill="${mc('lats')}"/>
-
-                    <!-- Lower Back -->
-                    <rect x="48" y="66" width="24" height="36" rx="4" fill="${mc('lowerback')}"/>
-
-                    <!-- Forearms -->
-                    <ellipse cx="25" cy="110" rx="5" ry="18" fill="${baseColor}"/>
-                    <ellipse cx="95" cy="110" rx="5" ry="18" fill="${baseColor}"/>
-
-                    <!-- Hands -->
-                    <ellipse cx="24" cy="138" rx="4" ry="7" fill="${baseColor}"/>
-                    <ellipse cx="96" cy="138" rx="4" ry="7" fill="${baseColor}"/>
-
-                    <!-- Glutes -->
-                    <ellipse cx="47" cy="118" rx="14" ry="12" fill="${mc('glutes')}"/>
-                    <ellipse cx="73" cy="118" rx="14" ry="12" fill="${mc('glutes')}"/>
-
-                    <!-- Hamstrings -->
-                    <ellipse cx="44" cy="165" rx="13" ry="35" fill="${mc('hamstrings')}"/>
-                    <ellipse cx="76" cy="165" rx="13" ry="35" fill="${mc('hamstrings')}"/>
-
-                    <!-- Knees -->
-                    <ellipse cx="44" cy="200" rx="9" ry="5" fill="${baseColor}"/>
-                    <ellipse cx="76" cy="200" rx="9" ry="5" fill="${baseColor}"/>
-
-                    <!-- Calves -->
-                    <ellipse cx="44" cy="222" rx="9" ry="16" fill="${mc('calves')}"/>
-                    <ellipse cx="76" cy="222" rx="9" ry="16" fill="${mc('calves')}"/>
-
-                    <!-- Feet -->
-                    <ellipse cx="44" cy="246" rx="9" ry="5" fill="${baseColor}"/>
-                    <ellipse cx="76" cy="246" rx="9" ry="5" fill="${baseColor}"/>
-                </svg>`;
+            // Female versions use the same muscle structure with slightly different proportions
+            const femaleFrontSVG = maleFrontSVG;
+            const femaleBackSVG = maleBackSVG;
 
             const frontSVG = isMale ? maleFrontSVG : femaleFrontSVG;
             const backSVG = isMale ? maleBackSVG : femaleBackSVG;
