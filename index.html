@@ -1032,6 +1032,8 @@
             { id: 'calf_raise', name: 'Calf Raises', muscles: ['calves'], primary: false },
             { id: 'preacher_curl', name: 'Preacher Curl', muscles: ['biceps'], primary: false },
             { id: 'pallof', name: 'Pallof Press', muscles: ['core'], optional: true },
+            { id: 'bar_hang', name: 'Bar Hang', muscles: ['forearms', 'shoulders', 'core'], primary: false },
+            { id: 'chin_ups', name: 'Chin Ups', muscles: ['lats', 'biceps', 'core'], primary: true },
         ];
 
         // ==========================================
@@ -1552,53 +1554,61 @@
                 ctx.stroke();
             }
 
-            // Draw line
-            ctx.strokeStyle = '#6c5ce7';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-
-            data.forEach((d, i) => {
-                const x = padding + (width - 2 * padding) * (i / (data.length - 1 || 1));
-                const y = padding + (height - 2 * padding) * (1 - (d[valueKey] - minVal) / (maxVal - minVal || 1));
-
-                if (i === 0) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
-            });
-            ctx.stroke();
-
-            // Draw points with color gradation based on reps
             // Calculate min/max reps for color scaling
             const repsValues = data.map(d => d.reps || 0);
             const minReps = Math.min(...repsValues);
             const maxReps = Math.max(...repsValues);
             const repsRange = maxReps - minReps || 1;
 
+            // Helper: get color based on reps intensity (green for low, dark red for high)
+            function getRepsColor(reps) {
+                const intensity = (reps - minReps) / repsRange;
+                // Green (#27ae60) at low reps -> Dark Red (#c0392b) at high reps
+                const r = Math.round(39 + (192 - 39) * intensity);
+                const g = Math.round(174 - (174 - 57) * intensity);
+                const b = Math.round(96 - (96 - 43) * intensity);
+                return `rgb(${r}, ${g}, ${b})`;
+            }
+
+            // Draw line segments with color based on average reps of connected points
+            ctx.lineWidth = 2.5;
+            for (let i = 1; i < data.length; i++) {
+                const x0 = padding + (width - 2 * padding) * ((i - 1) / (data.length - 1 || 1));
+                const y0 = padding + (height - 2 * padding) * (1 - (data[i - 1][valueKey] - minVal) / (maxVal - minVal || 1));
+                const x1 = padding + (width - 2 * padding) * (i / (data.length - 1 || 1));
+                const y1 = padding + (height - 2 * padding) * (1 - (data[i][valueKey] - minVal) / (maxVal - minVal || 1));
+
+                const avgReps = ((data[i - 1].reps || 0) + (data[i].reps || 0)) / 2;
+                ctx.strokeStyle = getRepsColor(avgReps);
+                ctx.beginPath();
+                ctx.moveTo(x0, y0);
+                ctx.lineTo(x1, y1);
+                ctx.stroke();
+            }
+
+            // Draw points with color based on reps
             data.forEach((d, i) => {
                 const x = padding + (width - 2 * padding) * (i / (data.length - 1 || 1));
                 const y = padding + (height - 2 * padding) * (1 - (d[valueKey] - minVal) / (maxVal - minVal || 1));
 
-                // Calculate color based on reps (lighter = fewer reps, darker = more reps)
                 const reps = d.reps || 0;
-                const intensity = (reps - minReps) / repsRange;
-                // Interpolate from light purple (#a29bfe) to dark purple (#6c5ce7)
-                const r = Math.round(162 - (162 - 108) * intensity);
-                const g = Math.round(155 - (155 - 92) * intensity);
-                const b = Math.round(254 - (254 - 231) * intensity);
-                ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                ctx.fillStyle = getRepsColor(reps);
 
                 ctx.beginPath();
-                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.arc(x, y, 6, 0, Math.PI * 2);
                 ctx.fill();
+
+                // White border for better visibility
+                ctx.strokeStyle = '#252542';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
 
                 // Add reps label above point
                 if (reps > 0) {
                     ctx.fillStyle = '#b2bec3';
                     ctx.font = '9px sans-serif';
                     ctx.textAlign = 'center';
-                    ctx.fillText(reps + 'r', x, y - 8);
+                    ctx.fillText(reps + 'r', x, y - 10);
                 }
             });
 
