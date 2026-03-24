@@ -1032,8 +1032,13 @@
             { id: 'calf_raise', name: 'Calf Raises', muscles: ['calves'], primary: false },
             { id: 'preacher_curl', name: 'Preacher Curl', muscles: ['biceps'], primary: false },
             { id: 'pallof', name: 'Pallof Press', muscles: ['core'], optional: true },
-            { id: 'bar_hang', name: 'Bar Hang', muscles: ['forearms', 'shoulders', 'core'], primary: false },
-            { id: 'chin_ups', name: 'Chin Ups', muscles: ['lats', 'biceps', 'core'], primary: true },
+            { id: 'bar_hang', name: 'Bar Hang', muscles: ['forearms', 'shoulders', 'core'], primary: false, unit: 'seconds' },
+            { id: 'chin_ups', name: 'Chin Ups', muscles: ['lats', 'biceps', 'core'], primary: true, unit: 'seconds' },
+            { id: 'goblet_squat', name: 'Goblet Squat', muscles: ['quads', 'glutes', 'core'], primary: true },
+            { id: 'reverse_lunge', name: 'Reverse Lunges', muscles: ['quads', 'glutes', 'hamstrings'], primary: true },
+            { id: 'bicep_curl', name: 'Bicep Curls', muscles: ['biceps'], primary: false },
+            { id: 'leg_extension', name: 'Leg Extension', muscles: ['quads'], primary: false },
+            { id: 'chest_press_db', name: 'Chest Press', muscles: ['chest', 'triceps', 'shoulders'], primary: true },
         ];
 
         // ==========================================
@@ -1239,6 +1244,7 @@
                 const reps = saved.reps || '';
                 const weight = saved.weight || '';
 
+                const isTimeBased = ex.unit === 'seconds';
                 return `
                     <div class="exercise-card ${isChecked ? 'completed' : ''} ${ex.optional ? 'optional' : ''}" data-exercise="${ex.id}">
                         <div class="exercise-header">
@@ -1250,12 +1256,12 @@
                         </div>
                         <div class="exercise-inputs">
                             <div class="input-group">
-                                <label>Weight (kg)</label>
+                                <label>${isTimeBased ? 'Seconds' : 'Weight (kg)'}</label>
                                 <input type="number" id="weight_${ex.id}" value="${weight}"
                                     placeholder="0" onchange="updateExerciseData('${ex.id}')">
                             </div>
                             <div class="input-group">
-                                <label>Reps</label>
+                                <label>${isTimeBased ? 'Sets' : 'Reps'}</label>
                                 <input type="number" id="reps_${ex.id}" value="${reps}"
                                     placeholder="0" onchange="updateExerciseData('${ex.id}')">
                             </div>
@@ -1475,7 +1481,8 @@
                 chartContainer.className = 'chart-container';
 
                 const title = document.createElement('h3');
-                title.textContent = ex.name + ' (kg)';
+                const unit = ex.unit === 'seconds' ? 's' : 'kg';
+                title.textContent = ex.name + ' (' + unit + ')';
                 chartContainer.appendChild(title);
 
                 const canvas = document.createElement('canvas');
