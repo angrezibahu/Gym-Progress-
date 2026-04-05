@@ -945,6 +945,10 @@
                         <button class="btn btn-secondary" onclick="exportData()">Export</button>
                     </div>
                     <div class="settings-item">
+                        <span>Export for Apple Health</span>
+                        <button class="btn btn-secondary" onclick="exportAppleHealth()">Export XML</button>
+                    </div>
+                    <div class="settings-item">
                         <span>Import Data</span>
                         <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Import</button>
                         <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(event)">
@@ -2075,6 +2079,116 @@
 
             URL.revokeObjectURL(url);
             showToast('Data exported!');
+        }
+
+        function exportAppleHealth() {
+            const data = loadData();
+
+            // Format date as Apple Health expects: "YYYY-MM-DD HH:MM:SS +0000"
+            function toHKDate(isoString) {
+                const d = new Date(isoString);
+                const pad = n => String(n).padStart(2, '0');
+                return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ` +
+                       `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} +0000`;
+            }
+
+            const now = toHKDate(new Date().toISOString());
+            const sex = data.user && data.user.gender === 'female'
+                ? 'HKBiologicalSexFemale' : 'HKBiologicalSexMale';
+
+            const lines = [];
+            lines.push('<?xml version="1.0" encoding="UTF-8"?>');
+            lines.push('<!DOCTYPE HealthData [');
+            lines.push('<!ELEMENT HealthData (ExportDate,Me,Record*,Workout*)>');
+            lines.push('<!ATTLIST HealthData locale CDATA #REQUIRED>');
+            lines.push('<!ELEMENT ExportDate EMPTY>');
+            lines.push('<!ATTLIST ExportDate value CDATA #REQUIRED>');
+            lines.push('<!ELEMENT Me EMPTY>');
+            lines.push('<!ATTLIST Me HKCharacteristicTypeIdentifierDateOfBirth CDATA #REQUIRED>');
+            lines.push('<!ATTLIST Me HKCharacteristicTypeIdentifierBiologicalSex CDATA #REQUIRED>');
+            lines.push('<!ATTLIST Me HKCharacteristicTypeIdentifierBloodType CDATA #REQUIRED>');
+            lines.push('<!ATTLIST Me HKCharacteristicTypeIdentifierFitzpatrickSkinType CDATA #REQUIRED>');
+            lines.push('<!ELEMENT Record EMPTY>');
+            lines.push('<!ATTLIST Record type CDATA #REQUIRED>');
+            lines.push('<!ATTLIST Record sourceName CDATA #REQUIRED>');
+            lines.push('<!ATTLIST Record sourceVersion CDATA #IMPLIED>');
+            lines.push('<!ATTLIST Record unit CDATA #IMPLIED>');
+            lines.push('<!ATTLIST Record creationDate CDATA #IMPLIED>');
+            lines.push('<!ATTLIST Record startDate CDATA #REQUIRED>');
+            lines.push('<!ATTLIST Record endDate CDATA #REQUIRED>');
+            lines.push('<!ATTLIST Record value CDATA #IMPLIED>');
+            lines.push('<!ELEMENT Workout (MetadataEntry*)>');
+            lines.push('<!ATTLIST Workout workoutActivityType CDATA #REQUIRED>');
+            lines.push('<!ATTLIST Workout duration CDATA #REQUIRED>');
+            lines.push('<!ATTLIST Workout durationUnit CDATA #REQUIRED>');
+            lines.push('<!ATTLIST Workout totalEnergyBurned CDATA #IMPLIED>');
+            lines.push('<!ATTLIST Workout totalEnergyBurnedUnit CDATA #IMPLIED>');
+            lines.push('<!ATTLIST Workout sourceName CDATA #REQUIRED>');
+            lines.push('<!ATTLIST Workout sourceVersion CDATA #IMPLIED>');
+            lines.push('<!ATTLIST Workout creationDate CDATA #IMPLIED>');
+            lines.push('<!ATTLIST Workout startDate CDATA #REQUIRED>');
+            lines.push('<!ATTLIST Workout endDate CDATA #REQUIRED>');
+            lines.push('<!ELEMENT MetadataEntry EMPTY>');
+            lines.push('<!ATTLIST MetadataEntry key CDATA #REQUIRED>');
+            lines.push('<!ATTLIST MetadataEntry value CDATA #REQUIRED>');
+            lines.push(']>');
+            lines.push('<HealthData locale="en_US">');
+            lines.push(` <ExportDate value="${now}"/>`);
+            lines.push(` <Me HKCharacteristicTypeIdentifierDateOfBirth="" HKCharacteristicTypeIdentifierBiologicalSex="${sex}" HKCharacteristicTypeIdentifierBloodType="HKBloodTypeNotSet" HKCharacteristicTypeIdentifierFitzpatrickSkinType="HKFitzpatrickSkinTypeNotSet"/>`);
+
+            // Body measurements → HealthKit Records
+            const measurements = data.measurements || [];
+            for (const m of measurements) {
+                const date = toHKDate(m.date);
+                if (m.weight) {
+                    lines.push(` <Record type="HKQuantityTypeIdentifierBodyMass" sourceName="Gym Progress Tracker" sourceVersion="1.0" unit="kg" creationDate="${date}" startDate="${date}" endDate="${date}" value="${m.weight}"/>`);
+                }
+                if (m.waist) {
+                    // Convert cm to m for HealthKit (waist circumference is stored in metres)
+                    const waistM = (m.waist / 100).toFixed(4);
+                    lines.push(` <Record type="HKQuantityTypeIdentifierWaistCircumference" sourceName="Gym Progress Tracker" sourceVersion="1.0" unit="m" creationDate="${date}" startDate="${date}" endDate="${date}" value="${waistM}"/>`);
+                }
+            }
+
+            // Workouts → HKWorkoutActivityTypeTraditionalStrengthTraining
+            const workouts = data.workouts || [];
+            for (const w of workouts) {
+                const startDate = toHKDate(w.date);
+                // Estimate end time as 60 minutes after start (app doesn't track duration)
+                const endD = new Date(w.date);
+                endD.setMinutes(endD.getMinutes() + 60);
+                const endDate = toHKDate(endD.toISOString());
+
+                // Calculate total weight lifted in this session for metadata
+                const exercises = w.exercises || {};
+                let totalWeight = 0;
+                for (const ex of Object.values(exercises)) {
+                    if (ex.completed && ex.weight && ex.reps) {
+                        totalWeight += ex.weight * ex.reps;
+                    }
+                }
+
+                lines.push(` <Workout workoutActivityType="HKWorkoutActivityTypeTraditionalStrengthTraining" duration="60" durationUnit="min" sourceName="Gym Progress Tracker" sourceVersion="1.0" creationDate="${startDate}" startDate="${startDate}" endDate="${endDate}">`);
+                if (totalWeight > 0) {
+                    lines.push(`  <MetadataEntry key="HKMetadataKeyTotalWeightLifted" value="${totalWeight} kg"/>`);
+                }
+                if (w.effort) {
+                    lines.push(`  <MetadataEntry key="HKMetadataKeyWorkoutBrandName" value="Effort: ${w.effort}/5"/>`);
+                }
+                lines.push(` </Workout>`);
+            }
+
+            lines.push('</HealthData>');
+
+            const xml = lines.join('\n');
+            const blob = new Blob([xml], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `apple-health-export-${new Date().toISOString().split('T')[0]}.xml`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Apple Health export ready!');
         }
 
         function importData(event) {
