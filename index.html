@@ -1043,6 +1043,9 @@
             { id: 'bicep_curl', name: 'Bicep Curls', muscles: ['biceps'], primary: false },
             { id: 'leg_extension', name: 'Leg Extension', muscles: ['quads'], primary: false },
             { id: 'chest_press_db', name: 'Chest Press', muscles: ['chest', 'triceps', 'shoulders'], primary: true },
+            // Cardio
+            { id: 'ski_erg', name: 'Ski Erg', muscles: ['lats', 'shoulders', 'core', 'legs'], primary: false, unit: 'cardio' },
+            { id: 'cycling', name: 'Cycling', muscles: ['quads', 'glutes', 'calves'], primary: false, unit: 'cardio' },
         ];
 
         // ==========================================
@@ -1249,6 +1252,9 @@
                 const weight = saved.weight || '';
 
                 const isTimeBased = ex.unit === 'seconds';
+                const isCardio = ex.unit === 'cardio';
+                const label1 = isCardio ? 'Time (min)' : (isTimeBased ? 'Seconds' : 'Weight (kg)');
+                const label2 = isCardio ? 'Distance (m)' : (isTimeBased ? 'Sets' : 'Reps');
                 return `
                     <div class="exercise-card ${isChecked ? 'completed' : ''} ${ex.optional ? 'optional' : ''}" data-exercise="${ex.id}">
                         <div class="exercise-header">
@@ -1260,12 +1266,12 @@
                         </div>
                         <div class="exercise-inputs">
                             <div class="input-group">
-                                <label>${isTimeBased ? 'Seconds' : 'Weight (kg)'}</label>
+                                <label>${label1}</label>
                                 <input type="number" id="weight_${ex.id}" value="${weight}"
                                     placeholder="0" onchange="updateExerciseData('${ex.id}')">
                             </div>
                             <div class="input-group">
-                                <label>${isTimeBased ? 'Sets' : 'Reps'}</label>
+                                <label>${label2}</label>
                                 <input type="number" id="reps_${ex.id}" value="${reps}"
                                     placeholder="0" onchange="updateExerciseData('${ex.id}')">
                             </div>
@@ -1485,7 +1491,7 @@
                 chartContainer.className = 'chart-container';
 
                 const title = document.createElement('h3');
-                const unit = ex.unit === 'seconds' ? 's' : 'kg';
+                const unit = ex.unit === 'seconds' ? 's' : ex.unit === 'cardio' ? 'min / m' : 'kg';
                 title.textContent = ex.name + ' (' + unit + ')';
                 chartContainer.appendChild(title);
 
@@ -1508,7 +1514,8 @@
                         }))
                         .slice(-10); // Last 10 entries
 
-                    drawLineChart(ctx, canvas, exerciseData, 'weight', 'kg');
+                    const chartLabel = ex.unit === 'seconds' ? 's' : ex.unit === 'cardio' ? 'min' : 'kg';
+                    drawLineChart(ctx, canvas, exerciseData, 'weight', chartLabel);
                 }, 0);
             });
         }
